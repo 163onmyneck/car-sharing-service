@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-car-type-table
+      author: 163
+      changes:
+        - createTable:
+            tableName: car_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: car_type_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: car_type
+            columns:
+              - column:
+                  name: car_type_name
+                  value: 'SEDAN'
+        - insert:
+            tableName: car_type
+            columns:
+              - column:
+                  name: car_type_name
+                  value: 'SUV'
+        - insert:
+            tableName: car_type
+            columns:
+              - column:
+                  name: car_type_name
+                  value: 'UNIVERSAL'
+        - insert:
+            tableName: car_type
+            columns:
+              - column:
+                  name: car_type_name
+                  value: 'HATCHBACK'
+      rollback:
+        - delete:
+            tableName: car_type
+        - dropTable:
+            tableName: car_type
