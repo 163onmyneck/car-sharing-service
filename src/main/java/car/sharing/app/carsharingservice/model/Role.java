@@ -12,28 +12,19 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "car_type")
+@Table(name = "roles")
 @Getter
 @Setter
-public class CarType {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CarTypeName carTypeName;
+    @Enumerated(EnumType.STRING)
+    private RoleName roleName;
 
-    public CarType() {
-    }
-
-    public CarType(CarTypeName carTypeName) {
-        this.carTypeName = carTypeName;
-    }
-
-    public enum CarTypeName {
-        SEDAN,
-        SUV,
-        UNIVERSAL,
-        HATCHBACK
+    public enum RoleName {
+        MANAGER,
+        CUSTOMER
     }
 }
