@@ -35,4 +35,12 @@ public class Car {
     private BigDecimal feeUsd;
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    public void decreaseInventory() {
+        inventory--;
+    }
+
+    public void increaseInventory() {
+        inventory++;
+    }
 }
