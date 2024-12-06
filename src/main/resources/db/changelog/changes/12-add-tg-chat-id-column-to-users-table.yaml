@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12-add-tg-chat-id-column-to-users-table.yaml
+      author: 163
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: tg_chat_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true

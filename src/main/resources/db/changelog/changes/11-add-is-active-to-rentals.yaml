@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-is-active-to-rentals
+      author: 163
+      changes:
+        - addColumn:
+            tableName: rentals
+            columns:
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false

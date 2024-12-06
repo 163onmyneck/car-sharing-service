@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -18,8 +19,9 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "rentals")
 @Getter
 @Setter
-@SQLRestriction(value = "WHERE is_deleted=false")
-@SQLDelete(sql = "UPDATE rentals SET is_deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE rentals SET is_deleted = 1 WHERE id = ?")
+@SQLRestriction(value = "is_deleted = false")
+@ToString
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +30,6 @@ public class Rental {
     private LocalDate rentalDate;
     @Column(nullable = false)
     private LocalDate returnDate;
-    @Column(nullable = false)
     private LocalDate actualReturnDate;
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = false)
@@ -36,6 +37,8 @@ public class Rental {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @Column(nullable = false)
+    @Column(name = "is_deleted", columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isDeleted = false;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isActive = true;
 }

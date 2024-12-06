@@ -4,7 +4,6 @@ import car.sharing.app.carsharingservice.config.MapperConfig;
 import car.sharing.app.carsharingservice.dto.car.CarRequestDto;
 import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.model.Car;
-import car.sharing.app.carsharingservice.model.CarType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,8 +16,4 @@ public interface CarMapper {
 
     @Mapping(target = "carType", source = "carType.carTypeName")
     CarResponseDto toDto(Car car);
-
-    default String map(CarType carType) {
-        return carType != null ? carType.getCarTypeName().name() : null;
-    }
 }

@@ -5,6 +5,7 @@ import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.service.car.CarService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CarController {
     private final CarService carService;
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping
     public CarResponseDto create(@RequestBody CarRequestDto carRequestDto) {
         return carService.save(carRequestDto);
@@ -35,6 +37,7 @@ public class CarController {
         return carService.getInfo(id);
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{id}")
     public CarResponseDto update(@PathVariable Long id, @RequestBody CarRequestDto carRequestDto) {
         return carService.update(id, carRequestDto);

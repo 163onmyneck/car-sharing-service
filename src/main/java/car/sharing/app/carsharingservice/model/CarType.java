@@ -10,11 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "car_type")
 @Getter
 @Setter
+@ToString
 public class CarType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +24,6 @@ public class CarType {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CarTypeName carTypeName;
-
-    public CarType() {
-    }
-
-    public CarType(CarTypeName carTypeName) {
-        this.carTypeName = carTypeName;
-    }
 
     public enum CarTypeName {
         SEDAN,
