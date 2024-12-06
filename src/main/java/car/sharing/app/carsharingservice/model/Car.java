@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -17,8 +18,9 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "cars")
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE cars SET is_deleted = true WHERE id = ?")
-@SQLRestriction(value = "is_deleted=false")
+@SQLDelete(sql = "UPDATE cars SET is_deleted = 1 WHERE id = ?")
+@SQLRestriction(value = "is_deleted = false")
+@ToString
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +35,7 @@ public class Car {
     private int inventory;
     @Column(nullable = false)
     private BigDecimal feeUsd;
-    @Column(nullable = false)
+    @Column(name = "is_deleted", columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isDeleted = false;
 
     public void decreaseInventory() {

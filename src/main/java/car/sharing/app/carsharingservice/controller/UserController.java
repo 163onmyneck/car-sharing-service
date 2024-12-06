@@ -1,10 +1,10 @@
 package car.sharing.app.carsharingservice.controller;
 
-import car.sharing.app.carsharingservice.dto.user.UserRequestDto;
-import car.sharing.app.carsharingservice.dto.user.UserResponseDto;
+import car.sharing.app.carsharingservice.dto.user.UserDto;
+import car.sharing.app.carsharingservice.model.User;
 import car.sharing.app.carsharingservice.service.user.UserService;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,19 +21,20 @@ public class UserController {
 
     @PutMapping("/{id}/role")
     public void updateRole(@PathVariable Long id,
-                           @RequestBody Map<String, String> role) {
-        String roleName = role.get("role");
-        userService.updateRole(id, roleName);
+                           @RequestParam String role) {
+        userService.updateRole(id, role);
     }
 
     @GetMapping("/me")
-    public UserResponseDto getMyProfile(@RequestParam Long userId) {
-        return userService.getCurrentProfileInfo(userId);
+    public UserDto getMyProfile(Authentication authentication) {
+        User user = (User) authentication.getCredentials();
+        return userService.getCurrentProfileInfo(user.getId());
     }
 
     @PutMapping("/me")
-    public UserResponseDto updateProfile(@RequestParam Long id,
-                                         @RequestBody UserRequestDto userRequestDto) {
-        return userService.updateProfileData(id, userRequestDto);
+    public UserDto updateProfile(Authentication authentication,
+                                         @RequestBody UserDto userProfileData) {
+        User user = (User) authentication.getCredentials();
+        return userService.updateProfileData(user.getId(), userProfileData);
     }
 }

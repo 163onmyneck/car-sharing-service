@@ -23,6 +23,13 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private RoleName roleName;
 
+    public Role() {
+    }
+
+    public Role(RoleName roleName) {
+        this.roleName = roleName;
+    }
+
     public enum RoleName {
         MANAGER,
         CUSTOMER

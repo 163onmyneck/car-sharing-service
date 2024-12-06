@@ -1,12 +1,16 @@
 package car.sharing.app.carsharingservice.service.user;
 
-import car.sharing.app.carsharingservice.dto.user.UserRequestDto;
-import car.sharing.app.carsharingservice.dto.user.UserResponseDto;
+import car.sharing.app.carsharingservice.dto.user.UserDto;
+import car.sharing.app.carsharingservice.dto.user.UserRegistrationRequestDto;
+import car.sharing.app.carsharingservice.exception.RegistrationException;
 
 public interface UserService {
+    UserDto register(UserRegistrationRequestDto userRequestDto)
+                                        throws RegistrationException;
+
     void updateRole(Long id, String role);
 
-    UserResponseDto getCurrentProfileInfo(Long id);
+    UserDto getCurrentProfileInfo(Long id);
 
-    UserResponseDto updateProfileData(Long id, UserRequestDto dto);
+    UserDto updateProfileData(Long id, UserDto dto);
 }

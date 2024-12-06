@@ -15,15 +15,17 @@ import java.math.BigDecimal;
 import java.net.URL;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "payments")
 @SQLDelete(sql = "UPDATE payments SET is_deleted = true WHERE id = ?")
-@SQLRestriction(value = "WHERE is_deleted=false")
+@SQLRestriction(value = "is_deleted = false")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,12 +45,13 @@ public class Payment {
     private String sessionId;
     @Column(nullable = false)
     private BigDecimal amountToPay;
-    @Column(nullable = false)
+    @Column(name = "is_deleted", columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isDeleted = false;
 
     public enum Status {
         PENDING,
-        PAID
+        PAID,
+        EXPIRED
     }
 
     public enum Type {
