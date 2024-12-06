@@ -87,11 +87,11 @@ public class RentalServiceImpl implements RentalService {
         RentalResponseDto rentalDto = rentalMapper.toDto(rentalRepository.save(rental));
         rentalDto.setCarResponseDto(carMapper.toDto(updatedCar));
         notificationService.sendMessageToAllManagers("Rental with id " + rental.getId()
-                                                    + " was returned. More details: " + rental,
-                userRepository.getAllByRole(Role.RoleName.MANAGER));
+                + " was returned. More details: " + rental, userRepository.getAllByRole(
+                                                                        Role.RoleName.MANAGER));
         notificationService.sendMessageToCustomer(rental.getUser().getTgChatId(),
-                "Your rental with id " + rental.getId()
-                        + " was returned. More details: " + rental);
+                "Your rental with id " + rental.getId() + " was returned. More details: "
+                                                                                        + rental);
         return rentalDto;
     }
 

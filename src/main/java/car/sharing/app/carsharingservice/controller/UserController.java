@@ -35,6 +35,7 @@ public class UserController {
     public UserDto updateProfile(Authentication authentication,
                                          @RequestBody UserDto userProfileData) {
         User user = (User) authentication.getCredentials();
+        userProfileData.setId(user.getId());
         return userService.updateProfileData(user.getId(), userProfileData);
     }
 }

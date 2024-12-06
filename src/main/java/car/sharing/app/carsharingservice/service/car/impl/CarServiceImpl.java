@@ -22,11 +22,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarResponseDto save(CarRequestDto carRequestDto) {
-        CarType carType = carTypeRepository.findByCarTypeName(
-                CarType.CarTypeName.valueOf(carRequestDto.getCarType().toUpperCase()))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Invalid car type. Car type:" + carRequestDto.getCarType()));
-
+        CarType carType = getCarType(carRequestDto.getCarType());
         Car model = carMapper.toModel(carRequestDto);
         model.setCarType(carType);
         return carMapper.toDto(carRepository.save(model));
@@ -47,15 +43,13 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarResponseDto update(Long id, CarRequestDto dto) {
-        Car car = carRepository.findById(id).orElseThrow();
+        Car car = carRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Can not find car with id " + id));
         car.setBrand(dto.getBrand() != null ? dto.getBrand() : car.getBrand());
         car.setModel(dto.getModel() != null ? dto.getModel() : car.getModel());
         car.setFeeUsd(dto.getFeeUsd() != null ? dto.getFeeUsd() : car.getFeeUsd());
-        car.setCarType(dto.getCarType() != null ? carTypeRepository.findByCarTypeName(
-                        CarType.CarTypeName.valueOf(dto.getCarType().toUpperCase()))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Invalid car type. Car type:" + dto.getCarType()))
-                : car.getCarType());
+        car.setCarType(dto.getCarType() != null ? getCarType(dto.getCarType())
+                                                        : car.getCarType());
         return carMapper.toDto(carRepository.save(car));
     }
 
@@ -63,4 +57,12 @@ public class CarServiceImpl implements CarService {
     public void deleteById(Long id) {
         carRepository.deleteById(id);
     }
+
+    private CarType getCarType(String carType) {
+        return carTypeRepository.findByCarTypeName(
+                        CarType.CarTypeName.valueOf(carType.toUpperCase()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Invalid car type. Car type:" + carType));
+    }
+
 }

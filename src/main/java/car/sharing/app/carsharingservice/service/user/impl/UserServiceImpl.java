@@ -42,12 +42,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateRole(Long id, String role) {
-            User user = getUserById(id);
-            Role roleFromBd = getRoleByRoleName(role);
-            Set<Role> userRoles = user.getRole();
-            userRoles.clear();
-            userRoles.add(roleFromBd);
-            userRepository.save(user);
+        User user = getUserById(id);
+        Role roleFromBd = getRoleByRoleName(role);
+        Set<Role> userRoles = user.getRole();
+        userRoles.clear();
+        userRoles.add(roleFromBd);
+        userRepository.save(user);
     }
 
     @Override
@@ -70,9 +70,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private Role getRoleByRoleName(String roleName) {
-            return roleRepository.findRoleByRoleName(
-                    Role.RoleName.valueOf(roleName.toUpperCase())).orElseThrow(
-                    () -> new EntityNotFoundException("Cannot find role with name: "
-                            + roleName));
+        return roleRepository
+                .findRoleByRoleName(Role.RoleName.valueOf(
+                        roleName.toUpperCase())).orElseThrow(
+                                () -> new EntityNotFoundException("Cannot find role with name: "
+                                                                                + roleName));
     }
 }
