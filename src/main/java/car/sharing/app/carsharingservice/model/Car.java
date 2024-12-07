@@ -11,9 +11,11 @@ import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+@Accessors(chain = true)
 @Entity
 @Table(name = "cars")
 @Getter
@@ -38,11 +40,13 @@ public class Car {
     @Column(name = "is_deleted", columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isDeleted = false;
 
-    public void decreaseInventory() {
+    public Car decreaseInventory() {
         inventory--;
+        return this;
     }
 
-    public void increaseInventory() {
+    public Car increaseInventory() {
         inventory++;
+        return this;
     }
 }

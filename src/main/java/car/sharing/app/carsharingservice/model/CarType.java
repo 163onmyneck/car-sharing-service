@@ -25,6 +25,13 @@ public class CarType {
     @Column(nullable = false)
     private CarTypeName carTypeName;
 
+    public CarType() {
+    }
+
+    public CarType(CarTypeName carTypeName) {
+        this.carTypeName = carTypeName;
+    }
+
     public enum CarTypeName {
         SEDAN,
         SUV,
