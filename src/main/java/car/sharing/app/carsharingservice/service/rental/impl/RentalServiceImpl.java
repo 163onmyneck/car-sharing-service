@@ -4,6 +4,7 @@ import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalRequestDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalResponseDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalSearchParams;
+import car.sharing.app.carsharingservice.exception.EntityNotFoundException;
 import car.sharing.app.carsharingservice.mapper.CarMapper;
 import car.sharing.app.carsharingservice.mapper.RentalMapper;
 import car.sharing.app.carsharingservice.model.Car;
@@ -37,19 +38,21 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto createRental(RentalRequestDto requestDto) {
+        if (requestDto.getReturnDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Return date cannot be before current date");
+        }
         Car car = carRepository.findById(requestDto.getCarId())
-                .orElseThrow(() -> new RuntimeException("Cannot find car with id "
+                .orElseThrow(() -> new EntityNotFoundException("Cannot find car with id "
                                                         + requestDto.getCarId()));
-        car.decreaseInventory();
-        final Car updatedCar = carRepository.save(car);
-        final CarResponseDto carDto = carMapper.toDto(updatedCar);
+        Car updatedCar = carRepository.save(car.decreaseInventory());
+        CarResponseDto carDto = carMapper.toDto(updatedCar);
 
         Rental rental = new Rental();
         rental.setReturnDate(requestDto.getReturnDate());
         rental.setRentalDate(LocalDate.now());
         rental.setCar(updatedCar);
         rental.setUser(userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Cannot find user with id "
+                .orElseThrow(() -> new EntityNotFoundException("Cannot find user with id "
                                                         + requestDto.getUserId())));
 
         List<User> managers = userRepository.getAllByRole(Role.RoleName.MANAGER);
@@ -77,11 +80,10 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public RentalResponseDto returnRental(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Cannot find rental with id "
+                .orElseThrow(() -> new EntityNotFoundException("Cannot find rental with id "
                                                                         + rentalId));
         Car car = rental.getCar();
-        car.increaseInventory();
-        Car updatedCar = carRepository.save(car);
+        Car updatedCar = carRepository.save(car.increaseInventory());
         rental.setActualReturnDate(LocalDate.now());
         rental.setActive(false);
         RentalResponseDto rentalDto = rentalMapper.toDto(rentalRepository.save(rental));
