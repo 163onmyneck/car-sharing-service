@@ -10,6 +10,7 @@ import car.sharing.app.carsharingservice.model.User;
 import car.sharing.app.carsharingservice.repository.role.RoleRepository;
 import car.sharing.app.carsharingservice.repository.user.UserRepository;
 import car.sharing.app.carsharingservice.service.user.UserService;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userRequestDto.getEmail()).isEmpty()) {
             User user = userMapper.toModel(userRequestDto);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole(Set.of(getRoleByRoleName(DEFAULT_ROLE)));
+            user.setRole(new HashSet<>(Set.of(getRoleByRoleName(DEFAULT_ROLE))));
             return userMapper.toDto(userRepository.save(user));
         }
         throw new RegistrationException("Can not register user with email: "
@@ -41,13 +42,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateRole(Long id, String role) {
+    public UserDto updateRole(Long id, String role) {
         User user = getUserById(id);
         Role roleFromBd = getRoleByRoleName(role);
-        Set<Role> userRoles = user.getRole();
-        userRoles.clear();
-        userRoles.add(roleFromBd);
-        userRepository.save(user);
+        Set<Role> roles = user.getRole();
+        Set<Role> newRoles = new HashSet<>(roles);
+        newRoles.add(roleFromBd);
+        user.setRole(newRoles);
+        return userMapper.toDto(userRepository.save(user)).setRole(role.toUpperCase());
     }
 
     @Override
