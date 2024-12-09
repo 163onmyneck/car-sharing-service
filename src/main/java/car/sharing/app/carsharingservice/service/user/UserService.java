@@ -8,7 +8,7 @@ public interface UserService {
     UserDto register(UserRegistrationRequestDto userRequestDto)
                                         throws RegistrationException;
 
-    void updateRole(Long id, String role);
+    UserDto updateRole(Long id, String role);
 
     UserDto getCurrentProfileInfo(Long id);
 

@@ -9,10 +9,12 @@ import car.sharing.app.carsharingservice.model.Role;
 import car.sharing.app.carsharingservice.model.User;
 import car.sharing.app.carsharingservice.repository.role.RoleRepository;
 import car.sharing.app.carsharingservice.repository.user.UserRepository;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -151,6 +154,39 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateRole_ValidDtoRequest_ShouldReturnItsUserDto() {
+        User user = new User()
+                .setId(1L)
+                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setEmail("email@test.com")
+                .setDeleted(false)
+                .setPassword("password")
+                .setFirstName("firstName")
+                .setLastName("lastName")
+                .setTgChatId(213123L);
+
+        String roleName = "manager";
+
+        UserDto expected = new UserDto()
+                .setEmail(user.getEmail())
+                .setId(user.getId())
+                .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
+                .setRole(roleName.toUpperCase());
+
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.valueOf(roleName.toUpperCase())))
+                .thenReturn(Optional.of(new Role(Role.RoleName.MANAGER)));
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
+        Mockito.when(userMapper.toDto(user)).thenReturn(expected);
+
+        UserDto actual = userService.updateRole(1L, roleName);
+
+        Assertions.assertEquals(actual.getRole(), expected.getRole());
+
+    }
+
+    @Test
     void getCurrentProfileInfo_CorrectId_ShouldReturnValidUserProfile() {
         User user = new User()
                 .setId(1L)
@@ -180,7 +216,7 @@ class UserServiceImplTest {
     void updateProfileData_ValidDataForUpdate_ShouldReturnValidDto() {
         User user = new User()
                 .setId(1L)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRole(new HashSet<>(Set.of(new Role(Role.RoleName.CUSTOMER))))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
