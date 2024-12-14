@@ -1,26 +1,26 @@
 package car.sharing.app.carsharingservice.service.car.impl;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import car.sharing.app.carsharingservice.dto.car.CarRequestDto;
 import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.exception.EntityNotFoundException;
 import car.sharing.app.carsharingservice.mapper.CarMapper;
 import car.sharing.app.carsharingservice.model.Car;
-import car.sharing.app.carsharingservice.model.CarType;
 import car.sharing.app.carsharingservice.repository.car.CarRepository;
-import car.sharing.app.carsharingservice.repository.cartype.CarTypeRepository;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 @RequiredArgsConstructor
 @ExtendWith(MockitoExtension.class)
 class CarServiceImplTest {
@@ -30,18 +30,16 @@ class CarServiceImplTest {
     @Mock
     private CarMapper carMapper;
 
-    @Mock
-    private CarTypeRepository carTypeRepository;
-
     @InjectMocks
     private CarServiceImpl carService;
 
     @Test
+    @DisplayName("Given valid carRequestDto, should return carResponseDto")
     void save_CarWithValidCredentials_ShouldReturnCarDto() {
         CarResponseDto expected = new CarResponseDto()
                 .setModel("model")
                 .setBrand("brand")
-                .setCarType("sedan")
+                .setCarType(Car.CarType.SEDAN)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
                 .setId(1L);
@@ -57,12 +55,10 @@ class CarServiceImplTest {
                 .setModel(expected.getModel())
                 .setBrand(expected.getBrand())
                 .setId(expected.getId())
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN))
+                .setCarType(Car.CarType.SEDAN)
                 .setInventory(expected.getInventory())
                 .setFeeUsd(expected.getFeeUsd());
 
-        Mockito.when(carTypeRepository.findByCarTypeName(
-                CarType.CarTypeName.SEDAN)).thenReturn(Optional.of(new CarType(CarType.CarTypeName.SEDAN)));
         Mockito.when(carMapper.toModel(Mockito.any(CarRequestDto.class))).thenReturn(car);
         Mockito.when(carRepository.save(Mockito.any(Car.class))).thenReturn(car);
         Mockito.when(carMapper.toDto(car)).thenReturn(expected);
@@ -73,14 +69,15 @@ class CarServiceImplTest {
     }
 
     @Test
-    void getAll() {
+    @DisplayName("Should return list with 2 cars")
+    void getAll_ShouldReturnAllExistingCars() {
         Car car1 = new Car()
                 .setModel("model1")
                 .setBrand("brand1")
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
                 .setId(1L)
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN));
+                .setCarType(Car.CarType.SEDAN);
 
         Car car2 = new Car()
                 .setModel("model2")
@@ -88,14 +85,14 @@ class CarServiceImplTest {
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
                 .setId(2L)
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN));
+                .setCarType(Car.CarType.SEDAN);
 
         CarResponseDto carResponseDto1 = new CarResponseDto()
                 .setModel(car1.getModel())
                 .setBrand(car1.getBrand())
                 .setId(car1.getId())
                 .setInventory(car1.getInventory())
-                .setCarType(car1.getCarType().toString())
+                .setCarType(car1.getCarType())
                 .setFeeUsd(car1.getFeeUsd());
 
         CarResponseDto carResponseDto2 = new CarResponseDto()
@@ -103,7 +100,7 @@ class CarServiceImplTest {
                 .setBrand(car2.getBrand())
                 .setId(car2.getId())
                 .setInventory(car2.getInventory())
-                .setCarType(car2.getCarType().toString())
+                .setCarType(car2.getCarType())
                 .setFeeUsd(car2.getFeeUsd());
 
         List<Car> cars = List.of(car1, car2);
@@ -120,17 +117,19 @@ class CarServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given incorrect car id. Should throw EntityNotFoundException")
     void getInfo_IncorrectId_ShouldThrowException() {
         Mockito.when(carRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> carService.getInfo(Mockito.anyLong()));
     }
 
     @Test
+    @DisplayName("Given valid carRequestDto, should update and return carResponseDto")
     void update_ValidRequestDto_ShouldReturnCarDto() {
         CarResponseDto expected = new CarResponseDto()
                 .setModel("model")
                 .setBrand("brand")
-                .setCarType(CarType.CarTypeName.SEDAN.name())
+                .setCarType(Car.CarType.SEDAN)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
                 .setId(1L);
@@ -138,7 +137,7 @@ class CarServiceImplTest {
         CarRequestDto requestForExpected = new CarRequestDto()
                 .setModel(expected.getModel())
                 .setBrand(expected.getBrand())
-                .setCarType(CarType.CarTypeName.SEDAN.name())
+                .setCarType(Car.CarType.SEDAN)
                 .setFeeUsd(expected.getFeeUsd())
                 .setInventory(expected.getInventory());
 
@@ -146,12 +145,11 @@ class CarServiceImplTest {
                 .setModel(expected.getModel())
                 .setBrand(expected.getBrand())
                 .setId(expected.getId())
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN))
+                .setCarType(Car.CarType.SEDAN)
                 .setInventory(expected.getInventory())
                 .setFeeUsd(expected.getFeeUsd());
 
         Mockito.when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
-        Mockito.when(carTypeRepository.findByCarTypeName(CarType.CarTypeName.SEDAN)).thenReturn(Optional.of(new CarType(CarType.CarTypeName.SEDAN)));
         Mockito.when(carRepository.save(Mockito.any(Car.class))).thenReturn(car);
         Mockito.when(carMapper.toDto(car)).thenReturn(expected);
 
@@ -161,13 +159,11 @@ class CarServiceImplTest {
     }
 
     @Test
-    void update_InvalidId_ShouldReturnCarDto(){
+    @DisplayName("Given incorrect car id. Should throw EntityNotFoundException")
+    void update_InvalidId_ShouldReturnCarDto() {
         Mockito.when(carRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> carService.update(Mockito.anyLong(), new CarRequestDto()));
-    }
-
-    @Test
-    void deleteById() {
+        assertThrows(EntityNotFoundException.class, () -> carService.update(
+                Mockito.anyLong(), new CarRequestDto()));
     }
 }

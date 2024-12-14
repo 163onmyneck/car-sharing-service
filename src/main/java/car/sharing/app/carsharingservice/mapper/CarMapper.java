@@ -14,6 +14,5 @@ public interface CarMapper {
     @Mapping(target = "deleted", ignore = true)
     Car toModel(CarRequestDto carRequestDto);
 
-    @Mapping(target = "carType", source = "carType.carTypeName")
     CarResponseDto toDto(Car car);
 }

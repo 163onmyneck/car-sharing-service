@@ -2,6 +2,7 @@ package car.sharing.app.carsharingservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,7 +11,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -41,13 +41,13 @@ public class User implements UserDetails {
     private String lastName;
     @Column(nullable = false)
     private String password;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> role;
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(nullable = false)
     private boolean isDeleted;
     private Long tgChatId;
 

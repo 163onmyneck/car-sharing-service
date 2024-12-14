@@ -1,6 +1,5 @@
 package car.sharing.app.carsharingservice.service.rental.impl;
 
-import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalRequestDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalResponseDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalSearchParams;
@@ -25,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
@@ -36,7 +36,6 @@ public class RentalServiceImpl implements RentalService {
     private final NotificationService notificationService;
 
     @Override
-    @Transactional
     public RentalResponseDto createRental(RentalRequestDto requestDto) {
         if (requestDto.getReturnDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Return date cannot be before current date");
@@ -45,7 +44,6 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new EntityNotFoundException("Cannot find car with id "
                                                         + requestDto.getCarId()));
         Car updatedCar = carRepository.save(car.decreaseInventory());
-        CarResponseDto carDto = carMapper.toDto(updatedCar);
 
         Rental rental = new Rental();
         rental.setReturnDate(requestDto.getReturnDate());
@@ -65,7 +63,7 @@ public class RentalServiceImpl implements RentalService {
                         + " was created. More details: " + rental);
 
         RentalResponseDto dto = rentalMapper.toDto(rentalRepository.save(rental));
-        dto.setCarResponseDto(carDto);
+        dto.setCarResponseDto(carMapper.toDto(updatedCar));
         return dto;
     }
 
@@ -77,7 +75,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public RentalResponseDto returnRental(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new EntityNotFoundException("Cannot find rental with id "

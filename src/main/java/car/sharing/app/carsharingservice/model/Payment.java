@@ -5,10 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -28,10 +27,10 @@ import org.hibernate.annotations.SQLRestriction;
 @Accessors(chain = true)
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rental_id")
+    @JoinColumn(name = "id", nullable = false)
+    @MapsId
     private Rental rental;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -45,7 +44,7 @@ public class Payment {
     private String sessionId;
     @Column(nullable = false)
     private BigDecimal amountToPay;
-    @Column(name = "is_deleted", columnDefinition = "TINYINT(1)", nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     public enum Status {

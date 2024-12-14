@@ -2,7 +2,9 @@ package car.sharing.app.carsharingservice.dto.payment;
 
 import java.math.BigDecimal;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 @Data
 public class PaymentDto {
     private Long id;

@@ -3,6 +3,7 @@ package car.sharing.app.carsharingservice.controller;
 import car.sharing.app.carsharingservice.dto.payment.PaymentDto;
 import car.sharing.app.carsharingservice.dto.payment.PaymentRequestDto;
 import car.sharing.app.carsharingservice.service.payment.PaymentService;
+import java.net.MalformedURLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,8 @@ public class PaymentController {
     }
 
     @PostMapping("/create")
-    public PaymentDto createPayment(@RequestBody PaymentRequestDto paymentDto) {
+    public PaymentDto createPayment(@RequestBody PaymentRequestDto paymentDto)
+            throws MalformedURLException {
         return paymentService.createPayment(paymentDto);
     }
 
