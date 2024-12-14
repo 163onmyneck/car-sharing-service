@@ -55,7 +55,83 @@ you can use `resources/application.properties` for your MySQL database credentia
 6. Run the application:
  `bash
    mvn spring-boot:run
-`
+
+### Database Schema
+
+#### Users
+| Column Name   | Type      | Constraints                 | Description                                |
+|---------------|-----------|-----------------------------|--------------------------------------------|
+| `id`          | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each user.          |
+| `email`       | VARCHAR   | NOT NULL, UNIQUE            | User's email address.                     |
+| `first_name`  | VARCHAR   | NOT NULL                    | User's first name.                        |
+| `last_name`   | VARCHAR   | NOT NULL                    | User's last name.                         |
+| `password`    | VARCHAR   | NOT NULL                    | Hashed user password.                     |
+| `is_deleted`  | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+| `tg_chat_id`  | BIGINT    | NULLABLE                    | Telegram chat ID for notifications.       |
+
+---
+
+#### Roles
+| Column Name   | Type      | Constraints                 | Description                                |
+|---------------|-----------|-----------------------------|--------------------------------------------|
+| `id`          | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each role.          |
+| `role_name`   | ENUM      | NOT NULL                    | Role name: `MANAGER`, `CUSTOMER`.         |
+
+**Relation**: Many-to-Many with `Users` through `users_roles`.
+
+---
+
+#### Cars
+| Column Name   | Type      | Constraints                 | Description                                |
+|---------------|-----------|-----------------------------|--------------------------------------------|
+| `id`          | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each car.           |
+| `model`       | VARCHAR   | NOT NULL                    | Model of the car.                         |
+| `brand`       | VARCHAR   | NOT NULL                    | Brand of the car.                         |
+| `car_type`    | ENUM      | NOT NULL                    | Car type: `SEDAN`, `SUV`, `UNIVERSAL`, etc. |
+| `inventory`   | INT       | NOT NULL                    | Number of cars available.                 |
+| `fee_usd`     | DECIMAL   | NOT NULL                    | Rental fee per day in USD.                |
+| `is_deleted`  | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+
+---
+
+#### Rentals
+| Column Name       | Type      | Constraints                 | Description                                |
+|-------------------|-----------|-----------------------------|--------------------------------------------|
+| `id`              | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each rental.        |
+| `rental_date`     | DATE      | NOT NULL                    | Start date of the rental.                 |
+| `return_date`     | DATE      | NOT NULL                    | Expected return date.                     |
+| `actual_return_date` | DATE   | NULLABLE                    | Actual date when the car was returned.    |
+| `car_id`          | BIGINT    | FOREIGN KEY                 | Associated car (from `Cars`).             |
+| `user_id`         | BIGINT    | FOREIGN KEY                 | Associated user (from `Users`).           |
+| `is_deleted`      | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+| `is_active`       | BOOLEAN   | DEFAULT TRUE                | Indicates whether the rental is ongoing.  |
+
+---
+
+#### Payments
+| Column Name       | Type      | Constraints                 | Description                                |
+|-------------------|-----------|-----------------------------|--------------------------------------------|
+| `id`              | BIGINT    | PRIMARY KEY                 | Unique identifier for each payment.       |
+| `rental_id`       | BIGINT    | FOREIGN KEY                 | Associated rental (from `Rentals`).       |
+| `status`          | ENUM      | NOT NULL                    | Payment status: `PENDING`, `PAID`, etc.   |
+| `type`            | ENUM      | NOT NULL                    | Payment type: `PAYMENT`, `FINE`.          |
+| `session_url`     | VARCHAR   | NOT NULL                    | URL for payment session.                  |
+| `session_id`      | VARCHAR   | NOT NULL                    | Identifier for payment session.           |
+| `amount_to_pay`   | DECIMAL   | NOT NULL                    | Total amount to be paid in USD.           |
+| `is_deleted`      | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+
+---
+
+### Relationships
+1. **Users and Roles**:
+   - Many-to-Many relationship through the `users_roles` join table.
+2. **Users and Rentals**:
+   - One-to-Many relationship (a user can have multiple rentals).
+3. **Cars and Rentals**:
+   - One-to-Many relationship (a car can be rented multiple times).
+4. **Rentals and Payments**:
+   - One-to-One relationship (a rental has exactly one payment).
+
 
 ## Usage
 
