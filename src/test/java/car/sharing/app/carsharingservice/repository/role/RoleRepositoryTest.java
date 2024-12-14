@@ -19,7 +19,6 @@ class RoleRepositoryTest {
     @DisplayName("find role by CUSTOMER role name, expecting Role.RoleName.CUSTOMER")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
-            "classpath:database/user/01-create-roles-users-tables.sql",
             "classpath:database/user/02-insert-2-users.sql",
             "classpath:database/user/03-insert-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

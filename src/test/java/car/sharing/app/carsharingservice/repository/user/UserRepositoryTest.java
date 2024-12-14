@@ -21,7 +21,6 @@ class UserRepositoryTest {
     @DisplayName("find by email, should return 1 user")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
-            "classpath:database/user/01-create-roles-users-tables.sql",
             "classpath:database/user/02-insert-2-users.sql",
             "classpath:database/user/03-insert-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -36,7 +35,6 @@ class UserRepositoryTest {
     @DisplayName("get all by role, should return 2 users")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
-            "classpath:database/user/01-create-roles-users-tables.sql",
             "classpath:database/user/02-insert-2-users.sql",
             "classpath:database/user/03-insert-roles.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -58,7 +56,6 @@ class UserRepositoryTest {
     @DisplayName("find by tg chat id,expecting user from db")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
-            "classpath:database/user/01-create-roles-users-tables.sql",
             "classpath:database/user/02-insert-2-users.sql",
             "classpath:database/user/03-insert-roles.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

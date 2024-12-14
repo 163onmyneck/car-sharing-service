@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userRequestDto.getEmail()).isEmpty()) {
             User user = userMapper.toModel(userRequestDto);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole(new HashSet<>(Set.of(getRoleByRoleName(DEFAULT_ROLE))));
+            user.setRoles(new HashSet<>(Set.of(getRoleByRoleName(DEFAULT_ROLE))));
             return userMapper.toDto(userRepository.save(user));
         }
         throw new RegistrationException("Can not register user with email: "
@@ -47,10 +47,10 @@ public class UserServiceImpl implements UserService {
     public UserDto updateRole(Long id, String role) {
         User user = getUserById(id);
         Role roleFromBd = getRoleByRoleName(role);
-        Set<Role> roles = user.getRole();
+        Set<Role> roles = user.getRoles();
         Set<Role> newRoles = new HashSet<>(roles);
         newRoles.add(roleFromBd);
-        user.setRole(newRoles);
+        user.setRoles(newRoles);
         return userMapper.toDto(userRepository.save(user)).setRole(role.toUpperCase());
     }
 

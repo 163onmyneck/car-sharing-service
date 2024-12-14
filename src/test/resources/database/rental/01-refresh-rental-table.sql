@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS cars;
-DROP TABLE IF EXISTS rentals;
+DELETE FROM cars;
+DELETE FROM rentals;
 
-CREATE TABLE cars (
+CREATE TABLE IF NOT EXISTS cars (
                       id BIGINT PRIMARY KEY,
                       model VARCHAR(50),
                       brand VARCHAR(50),
@@ -11,7 +11,7 @@ CREATE TABLE cars (
                       is_deleted BOOLEAN
 );
 
-CREATE TABLE rentals (
+CREATE TABLE IF NOT EXISTS rentals (
                          id BIGINT PRIMARY KEY,
                          rental_date DATE,
                          return_date DATE,

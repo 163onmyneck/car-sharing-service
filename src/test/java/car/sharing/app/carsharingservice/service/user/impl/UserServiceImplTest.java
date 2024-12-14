@@ -46,7 +46,7 @@ class UserServiceImplTest {
             throws RegistrationException {
         User user = new User()
                 .setId(1L)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
@@ -106,7 +106,7 @@ class UserServiceImplTest {
     void register_UserWithInvalidCredentials_ShouldThrowException() {
         User user = new User()
                 .setId(1L)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
@@ -152,7 +152,7 @@ class UserServiceImplTest {
     void updateRole_ValidDtoRequest_ShouldReturnItsUserDto() {
         User user = new User()
                 .setId(1L)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
@@ -187,7 +187,7 @@ class UserServiceImplTest {
     void getCurrentProfileInfo_CorrectId_ShouldReturnValidUserProfile() {
         User user = new User()
                 .setId(1L)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
@@ -214,7 +214,7 @@ class UserServiceImplTest {
     void updateProfileData_ValidDataForUpdate_ShouldReturnValidDto() {
         User user = new User()
                 .setId(1L)
-                .setRole(new HashSet<>(Set.of(new Role(Role.RoleName.CUSTOMER))))
+                .setRoles(new HashSet<>(Set.of(new Role(Role.RoleName.CUSTOMER))))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
@@ -224,7 +224,7 @@ class UserServiceImplTest {
 
         User updatedUser = new User()
                 .setId(1L)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email1@test.com")
                 .setDeleted(false)
                 .setPassword("passwor1d1131df")
