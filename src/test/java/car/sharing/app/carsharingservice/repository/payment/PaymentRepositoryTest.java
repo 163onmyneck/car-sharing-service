@@ -6,11 +6,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @DataJpaTest
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class PaymentRepositoryTest {
     @Autowired
     private PaymentRepository paymentRepository;
@@ -18,6 +22,8 @@ class PaymentRepositoryTest {
     @Test
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/02-insert-2-users.sql",
+            "classpath:database/user/03-insert-roles.sql",
             "classpath:database/rental/02-insert-2-rentals.sql",
             "classpath:database/payment/create-5-payments.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

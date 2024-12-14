@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import car.sharing.app.carsharingservice.dto.user.UserDto;
 import car.sharing.app.carsharingservice.dto.user.UserRegistrationRequestDto;
-import car.sharing.app.carsharingservice.exception.RegistrationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,7 +61,8 @@ class AuthenticationControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        UserDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+        UserDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(), UserDto.class);
 
         Assertions.assertEquals(dto.getEmail(), actual.getEmail());
     }
