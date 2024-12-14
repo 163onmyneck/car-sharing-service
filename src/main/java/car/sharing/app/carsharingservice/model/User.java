@@ -46,14 +46,14 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> role;
+    private Set<Role> roles;
     @Column(nullable = false)
     private boolean isDeleted;
     private Long tgChatId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.stream()
+        return roles.stream()
                 .map((r -> new SimpleGrantedAuthority(r.getRoleName().name())))
                 .collect(Collectors.toList());
     }

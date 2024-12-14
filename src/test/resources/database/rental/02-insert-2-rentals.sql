@@ -38,16 +38,16 @@ INSERT INTO rentals (
     id,
     rental_date,
     return_date,
-    actual_rental_date,
+    actual_return_date,
     car_id,
     user_id,
     is_deleted,
-    isActive
+    is_active
 ) values (
           1,
-          2024-12-11,
-          2024-12-15,
-          null,
+          '2024-12-11',
+          '2024-12-15',
+          '2024-12-17',
           1,
           2,
           false,
@@ -58,16 +58,16 @@ INSERT INTO rentals (
     id,
     rental_date,
     return_date,
-    actual_rental_date,
+    actual_return_date,
     car_id,
     user_id,
     is_deleted,
-    isActive
+    is_active
 ) values (
              2,
-             2024-12-11,
-             2024-12-15,
-             2024-12-17,
+             '2024-12-11',
+             '2024-12-15',
+             '2024-12-17',
              2,
              2,
              false,

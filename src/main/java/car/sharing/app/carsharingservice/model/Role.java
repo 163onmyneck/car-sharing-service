@@ -10,12 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles")
 @Getter
 @Setter
-public class Role {
+public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +29,11 @@ public class Role {
 
     public Role(RoleName roleName) {
         this.roleName = roleName;
+    }
+
+    @Override
+    public String getAuthority() {
+        return roleName.name();
     }
 
     public enum RoleName {

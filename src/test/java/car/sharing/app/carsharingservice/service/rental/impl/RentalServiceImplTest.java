@@ -116,7 +116,7 @@ class RentalServiceImplTest {
 
         User user = new User()
                 .setId(DEFAULT_ID_VALUE)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")
@@ -179,7 +179,7 @@ class RentalServiceImplTest {
 
         User user = new User()
                 .setId(DEFAULT_ID_VALUE)
-                .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
+                .setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)))
                 .setEmail("email@test.com")
                 .setDeleted(false)
                 .setPassword("password")

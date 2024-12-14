@@ -13,7 +13,7 @@ public interface UserMapper {
     UserDto toDto(User user);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "tgChatId", ignore = true)
     @Mapping(target = "authorities", ignore = true)

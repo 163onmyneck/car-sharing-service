@@ -18,7 +18,9 @@ class RentalRepositoryTest {
     @Test
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
-            "classpath:database/rental/01-refresh-rental-table.sql"
+            "classpath:database/user/02-insert-2-users.sql",
+            "classpath:database/user/03-insert-roles.sql",
+            "classpath:database/rental/02-insert-2-rentals.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void getAllRentalsByUserId() {
         int expectedSize = 2;

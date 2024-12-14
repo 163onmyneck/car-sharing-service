@@ -24,8 +24,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: car_type_id
-                  type: BIGINT
+                  name: car_type
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
@@ -38,6 +38,3 @@ databaseChangeLog:
                   type: DECIMAL(19,2)
                   constraints:
                     nullable: false
-              - column:
-                  name: car_type
-                  type: VARCHAR(255)

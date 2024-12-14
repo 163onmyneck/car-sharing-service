@@ -24,7 +24,7 @@ public class RentalController {
     @PostMapping("/create-rental")
     public RentalResponseDto createRental(Authentication authentication,
                                           @RequestBody RentalRequestDto rentalRequestDto) {
-        User user = (User) authentication.getCredentials();
+        User user = (User) authentication.getPrincipal();
         rentalRequestDto.setUserId(user.getId());
         return rentalService.createRental(rentalRequestDto);
     }
