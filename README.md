@@ -130,7 +130,7 @@ you can use `resources/application.properties` for your MySQL database credentia
 3. **Cars and Rentals**:
    - One-to-Many relationship (a car can be rented multiple times).
 4. **Rentals and Payments**:
-   - One-to-One relationship (a rental has exactly one payment).
+   - One-to-One relationship (payment can not exist without rental).
 
 
 ## Usage
