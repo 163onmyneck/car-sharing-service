@@ -54,55 +54,16 @@ you can use `resources/application.properties` for your MySQL database credentia
 
 ## Usage
 
-1. **User Registration:**  
-   Users can register by using the URL:  
-   `POST http://localhost:8081/users/register`  
-   Example payload:  
-   ```json
-   {
-       "email": "john_doe@test.com",
-       "password": "password123",
-       "repeatPassword: "password123"
-   }
-2. **Get Your Profile Data:**
-   User can view his profile:
-  `GET http://localhost:8081/me`
+User Operations:
+- Register and log in to access car rental services.
+- Browse available cars and filter based on criteria.
+- Initiate rentals and process payments through the integrated payment gateway.
 
-3. **Get Your Profile Data:**
-   User can also update his profile info
-   `POST http://localhost:8081/me`
+## Administrator Operations:
 
-4. **Get User Details:**
-   Users can view their profile details by ID:
-  `GET http://localhost:8081/users/{id}`
-
-5. **Update User Details:**
-    Managers can update users' roles using:
-    `PUT http://localhost:8081/users/{id}/role`
-
-6. **Create Rental**
-   Users can create rentals
-   `POST http://localhost:8081/rentals/create-rental`
-   Example payload:  
-   ```json
-   {
-       "returnDate": "2024-10-11",
-       "carId": 5,
-   }
-
-7. **Get All Rentals By User Id**
-   Users can create rentals
-   `GET http://localhost:8081/rentals`
-   
-8. **Return Rental**
-   Users can return their rentals
-   `POST http://localhost:8081/rentals/{id}/return`
-   
-9. **Search Rentals**
-   Users can find their rentals with special credentials
-   `POST http://localhost:8081/rentals/search`
-
-I will finish later
+- Manage car inventory by adding, updating, or removing vehicles.
+- Monitor active rentals and track overdue returns.
+- Manage user roles and permissions.
 
 ## Contributing
 
