@@ -18,9 +18,11 @@ import java.net.URL;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentStrategyFactory paymentStrategyFactory;
     private final PaymentRepository paymentRepository;
@@ -36,14 +38,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentDto createPayment(PaymentRequestDto paymentRequestDto) {
-        Rental rental = rentalRepository.findByIdNotActive(paymentRequestDto.getRentalId())
+    public PaymentDto createPayment(PaymentRequestDto paymentRequestDto)
+            throws MalformedURLException {
+        Rental rental = rentalRepository.findById(paymentRequestDto.getRentalId())
                 .orElseThrow(() -> new EntityNotFoundException("Cannot "
                         + " find rental by id: " + paymentRequestDto.getRentalId()));
 
         PaymentStrategy strategy = paymentStrategyFactory.getStrategy(
-                Payment.Type.valueOf(paymentRequestDto.getType().toUpperCase())
-        );
+                Payment.Type.valueOf(paymentRequestDto.getType().toUpperCase()));
 
         if (strategy == null) {
             throw new IllegalArgumentException("Invalid payment type: "
@@ -58,13 +60,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .setAmountToPay(totalAmount)
                 .setStatus(Payment.Status.PENDING);
         Session checkoutSession = checkoutService.createCheckoutSession(payment.getAmountToPay());
-        try {
-            if (checkoutSession != null) {
-                payment.setSessionId(checkoutSession.getId())
-                        .setSessionUrl(new URL(checkoutSession.getUrl()));
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Could not create URL. Url: " + checkoutSession.getUrl());
+        if (checkoutSession != null) {
+            payment.setSessionId(checkoutSession.getId())
+                    .setSessionUrl(new URL(checkoutSession.getUrl()));
+        } else {
+            throw new IllegalArgumentException("Session can not be null");
         }
         return paymentMapper.toDto(paymentRepository.save(payment));
     }
@@ -73,9 +73,9 @@ public class PaymentServiceImpl implements PaymentService {
         List<Payment> pendingPayments = paymentRepository.findAllByStatus(Payment.Status.PENDING);
         for (Payment payment : pendingPayments) {
             String paymentStatus = checkoutService.getPaymentStatus(payment.getSessionId());
-            if (paymentStatus.equalsIgnoreCase(Payment.Status.PAID.toString())) {
+            if (paymentStatus.equalsIgnoreCase("PAID")) {
                 payment.setStatus(Payment.Status.PAID);
-            } else if (paymentStatus.equalsIgnoreCase(Payment.Status.EXPIRED.toString())) {
+            } else if (paymentStatus.equalsIgnoreCase("EXPIRED")) {
                 payment.setStatus(Payment.Status.EXPIRED);
             }
             paymentRepository.save(payment);

@@ -1,5 +1,8 @@
 package car.sharing.app.carsharingservice.service.rental.impl;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalRequestDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalResponseDto;
@@ -8,14 +11,11 @@ import car.sharing.app.carsharingservice.exception.EntityNotFoundException;
 import car.sharing.app.carsharingservice.mapper.CarMapper;
 import car.sharing.app.carsharingservice.mapper.RentalMapper;
 import car.sharing.app.carsharingservice.model.Car;
-import car.sharing.app.carsharingservice.model.CarType;
 import car.sharing.app.carsharingservice.model.Rental;
 import car.sharing.app.carsharingservice.model.Role;
 import car.sharing.app.carsharingservice.model.User;
 import car.sharing.app.carsharingservice.repository.car.CarRepository;
 import car.sharing.app.carsharingservice.repository.rental.RentalRepository;
-import car.sharing.app.carsharingservice.repository.rental.RentalSpecifications;
-import car.sharing.app.carsharingservice.repository.rental.SpecificationBuilder;
 import car.sharing.app.carsharingservice.repository.user.UserRepository;
 import car.sharing.app.carsharingservice.service.notification.NotificationService;
 import java.math.BigDecimal;
@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,8 +33,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RequiredArgsConstructor
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +54,7 @@ class RentalServiceImplTest {
     private NotificationService notificationService;
 
     @Test
+    @DisplayName("Given invalid time, should throw IllegalArgumentException")
     void createRental_InvalidDate_ShouldThrowException() {
         LocalDate invalidDate = LocalDate.now().minusDays(10);
         RentalRequestDto rentalRequestDto = new RentalRequestDto()
@@ -62,10 +62,12 @@ class RentalServiceImplTest {
                 .setCarId(DEFAULT_ID_VALUE)
                 .setUserId(DEFAULT_ID_VALUE);
 
-        assertThrows(IllegalArgumentException.class, () -> rentalService.createRental(rentalRequestDto));
+        assertThrows(IllegalArgumentException.class,
+                () -> rentalService.createRental(rentalRequestDto));
     }
 
     @Test
+    @DisplayName("Given invalid rental id, should throw EntityNotFoundException")
     void createRental_InvalidCarId_ShouldThrowException() {
         long invalidCarId = 1000L;
         Mockito.when(carRepository.findById(invalidCarId)).thenReturn(Optional.empty());
@@ -77,9 +79,12 @@ class RentalServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given invalid user id, should throw EntityNotFoundException")
     void createRental_InvalidUserId_ShouldThrowException() {
-        Mockito.when(carRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(Mockito.mock(Car.class)));
-        Mockito.when(userRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.empty());
+        Mockito.when(carRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(
+                Mockito.mock(Car.class)));
+        Mockito.when(userRepository.findById(DEFAULT_ID_VALUE)).thenReturn(
+                Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> rentalService.createRental(
                 new RentalRequestDto()
                         .setCarId(DEFAULT_ID_VALUE)
@@ -88,12 +93,13 @@ class RentalServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given valid rentalResponseDto, should save and return carResponseDto")
     void createRental_AllCredentialsAreValid_ShouldReturnValidDto() {
         Car car = new Car()
                 .setId(DEFAULT_ID_VALUE)
                 .setBrand("BMW")
                 .setModel("model")
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN))
+                .setCarType(Car.CarType.SEDAN)
                 .setDeleted(false)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100);
@@ -105,7 +111,7 @@ class RentalServiceImplTest {
                 .setBrand(updatedCar.getBrand())
                 .setModel(updatedCar.getModel())
                 .setInventory(updatedCar.getInventory())
-                .setCarType(String.valueOf(updatedCar.getCarType()))
+                .setCarType(updatedCar.getCarType())
                 .setFeeUsd(updatedCar.getFeeUsd());
 
         User user = new User()
@@ -151,16 +157,14 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void createRental() {
-    }
-
-    @Test
-    void getAllRentalsByUserId() {
+    @DisplayName("Get all rentals by valid user id. Should return list with "
+            + "2 carResponseDtos")
+    void getAllRentalsByUserId_ValidUserId_ShouldReturnList() {
         Car car = new Car()
                 .setId(DEFAULT_ID_VALUE)
                 .setBrand("BMW")
                 .setModel("model")
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN))
+                .setCarType(Car.CarType.SEDAN)
                 .setDeleted(false)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100);
@@ -170,7 +174,7 @@ class RentalServiceImplTest {
                 .setBrand(car.getBrand())
                 .setModel(car.getModel())
                 .setInventory(car.getInventory())
-                .setCarType(String.valueOf(car.getCarType()))
+                .setCarType(car.getCarType())
                 .setFeeUsd(car.getFeeUsd());
 
         User user = new User()
@@ -226,18 +230,23 @@ class RentalServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given invalid rental id, should throw EntityNotFoundException")
     void returnRental_InvalidRentalId_ShouldThrowException() {
-        Mockito.when(rentalRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> rentalService.returnRental(DEFAULT_ID_VALUE));
+        Mockito.when(rentalRepository.findById(DEFAULT_ID_VALUE))
+                .thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class,
+                () -> rentalService.returnRental(DEFAULT_ID_VALUE));
     }
 
     @Test
+    @DisplayName("Return rental by valid id, should return rentalResponseDto "
+            + "and fill its properties")
     void returnRental_ValidRental_ShouldReturnValidDto() {
         Car car = new Car()
                 .setId(DEFAULT_ID_VALUE)
                 .setBrand("BMW")
                 .setModel("model")
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN))
+                .setCarType(Car.CarType.SEDAN)
                 .setDeleted(false)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100);
@@ -247,7 +256,7 @@ class RentalServiceImplTest {
                 .setBrand(car.getBrand())
                 .setModel(car.getModel())
                 .setInventory(car.increaseInventory().getInventory())
-                .setCarType(String.valueOf(car.getCarType()))
+                .setCarType(car.getCarType())
                 .setFeeUsd(car.getFeeUsd());
 
         Rental rental = new Rental()
@@ -264,7 +273,6 @@ class RentalServiceImplTest {
                 .setReturnDate(rental.getReturnDate())
                 .setRentalDate(rental.getRentalDate());
 
-
         Mockito.when(rentalRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(rental));
         Mockito.when(carRepository.save(car)).thenReturn(car.increaseInventory());
         Mockito.when(rentalRepository.save(Mockito.any(Rental.class))).thenReturn(rental);
@@ -277,24 +285,16 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getSpecificRental() {
+    @DisplayName("Get specific rental by rentalParams. Expecting list with 1 dto")
+    void getSpecificRental_ValidSearchParams_ShouldReturnList() {
         RentalSearchParams rentalSearchParams = new RentalSearchParams()
                 .setUserId(DEFAULT_ID_VALUE);
-
-        SpecificationBuilder specificationBuilder = new SpecificationBuilder();
-
-        Specification<Rental> rentalSpecifications = specificationBuilder
-                .with(RentalSpecifications.byCarId(rentalSearchParams.getCarId()))
-                .with(RentalSpecifications.byDateRange(rentalSearchParams.getFirstDate(),
-                        rentalSearchParams.getSecondDate()))
-                .with(RentalSpecifications.byIsActive(rentalSearchParams.getIsActive()))
-                .with(RentalSpecifications.byUserId(rentalSearchParams.getUserId())).build();
 
         Car car = new Car()
                 .setId(DEFAULT_ID_VALUE)
                 .setBrand("BMW")
                 .setModel("model")
-                .setCarType(new CarType(CarType.CarTypeName.SEDAN))
+                .setCarType(Car.CarType.SEDAN)
                 .setDeleted(false)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100);
@@ -304,7 +304,7 @@ class RentalServiceImplTest {
                 .setBrand(car.getBrand())
                 .setModel(car.getModel())
                 .setInventory(car.increaseInventory().getInventory())
-                .setCarType(String.valueOf(car.getCarType()))
+                .setCarType(car.getCarType())
                 .setFeeUsd(car.getFeeUsd());
 
         Rental rental = new Rental()
@@ -321,7 +321,8 @@ class RentalServiceImplTest {
                 .setReturnDate(rental.getReturnDate())
                 .setRentalDate(rental.getRentalDate());
 
-        Mockito.when(rentalRepository.findAll(Mockito.any(Specification.class))).thenReturn(List.of(rental));
+        Mockito.when(rentalRepository.findAll(Mockito.any(Specification.class)))
+                .thenReturn(List.of(rental));
         Mockito.when(rentalMapper.toDto(rental)).thenReturn(expected);
 
         List<RentalResponseDto> actual = rentalService.getSpecificRental(rentalSearchParams);

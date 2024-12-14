@@ -1,5 +1,8 @@
 package car.sharing.app.carsharingservice.service.user.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import car.sharing.app.carsharingservice.dto.user.UserDto;
 import car.sharing.app.carsharingservice.dto.user.UserRegistrationRequestDto;
 import car.sharing.app.carsharingservice.exception.EntityNotFoundException;
@@ -13,9 +16,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +25,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 @RequiredArgsConstructor
 @ExtendWith(MockitoExtension.class)
@@ -43,17 +40,10 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    @DisplayName(value = "")
-    void register_NewUserWithValidCredentials_ShouldReturnItsUserDto() throws RegistrationException {
+    @DisplayName("Given valid register user dto. Should return user dto")
+    void register_NewUserWithValidCredentials_ShouldReturnItsUserDto()
+            throws RegistrationException {
         User user = new User()
                 .setId(1L)
                 .setRole(Set.of(new Role(Role.RoleName.CUSTOMER)))
@@ -83,7 +73,7 @@ class UserServiceImplTest {
         Mockito.when(passwordEncoder.encode(user.getPassword()))
                 .thenReturn(user.getPassword() + "encoded");
         Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.CUSTOMER))
-                .thenReturn( Optional.of(new Role(Role.RoleName.CUSTOMER)));
+                .thenReturn(Optional.of(new Role(Role.RoleName.CUSTOMER)));
         Mockito.when(userRepository.save(user)).thenReturn(user);
         Mockito.when(userMapper.toDto(user)).thenReturn(expectedUserDto);
 
@@ -96,7 +86,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName(value = "")
+    @DisplayName("Given existing user. Should throw RegistrationException")
     void register_ExistingUser_ShouldThrowRegistrationException() {
         UserRegistrationRequestDto requestDto = new UserRegistrationRequestDto()
                 .setEmail("email@test.com")
@@ -112,7 +102,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName(value = "")
+    @DisplayName("Given userDto with different passwords. Should throw IllegalArgumentException")
     void register_UserWithInvalidCredentials_ShouldThrowException() {
         User user = new User()
                 .setId(1L)
@@ -135,6 +125,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given invalid user id. Should throw EntityNotFoundException")
     void updateRole_InvalidUserId_ShouldThrowEntityNotFoundException() {
         Mockito.when(userRepository.findById(100L))
                 .thenReturn(Optional.empty());
@@ -144,16 +135,20 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given invalid role name. Should throw EntityNotFoundException")
     void updateRole_InvalidRoleName_ShouldThrowException() {
         long userId = 1L;
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
         Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.CUSTOMER))
                 .thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.updateRole(userId, "customer"));
+        assertThrows(EntityNotFoundException.class,
+                () -> userService.updateRole(userId, "customer"));
     }
 
     @Test
+    @DisplayName("Given valid roleName and user's id. "
+            + "Should update user's role and return it's dto")
     void updateRole_ValidDtoRequest_ShouldReturnItsUserDto() {
         User user = new User()
                 .setId(1L)
@@ -175,7 +170,8 @@ class UserServiceImplTest {
                 .setRole(roleName.toUpperCase());
 
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.valueOf(roleName.toUpperCase())))
+        Mockito.when(roleRepository.findRoleByRoleName(
+                Role.RoleName.valueOf(roleName.toUpperCase())))
                 .thenReturn(Optional.of(new Role(Role.RoleName.MANAGER)));
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
         Mockito.when(userMapper.toDto(user)).thenReturn(expected);
@@ -187,6 +183,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given valid user id. Should return user's dto")
     void getCurrentProfileInfo_CorrectId_ShouldReturnValidUserProfile() {
         User user = new User()
                 .setId(1L)
@@ -213,6 +210,7 @@ class UserServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given valid dtoRequest. Should update user and return it's dto")
     void updateProfileData_ValidDataForUpdate_ShouldReturnValidDto() {
         User user = new User()
                 .setId(1L)
@@ -240,12 +238,12 @@ class UserServiceImplTest {
                 .setFirstName(updatedUser.getFirstName())
                 .setLastName(updatedUser.getLastName());
 
-
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(user)).thenReturn(updatedUser);
         Mockito.when(userMapper.toDto(updatedUser)).thenReturn(expectedProfileData);
 
-        UserDto actualProfileData = userService.updateProfileData(user.getId(), expectedProfileData);
+        UserDto actualProfileData = userService
+                .updateProfileData(user.getId(), expectedProfileData);
 
         assertThat(actualProfileData).isEqualTo(expectedProfileData);
     }

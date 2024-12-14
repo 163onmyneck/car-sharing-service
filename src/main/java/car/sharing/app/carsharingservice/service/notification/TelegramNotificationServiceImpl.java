@@ -25,6 +25,8 @@ public class TelegramNotificationServiceImpl extends TelegramLongPollingBot
             .getLogger(TelegramNotificationServiceImpl.class);
     private static final String NOTIFY_SUCCESS_MESSAGE = "Hi! I'll notify you about all "
             + "recent activities you must know";
+    private static final String RENOTIFY_SUCCESS_MESSAGE = "Hi! You've already linked up your tg."
+            + " I'll notify you about all recent activities you must know";
     private static final String ENTER_ID_MESSAGE = "Please, enter your ID from the "
             + "website using /start userId";
     private static final String START_COMMAND = "/start";
@@ -63,10 +65,9 @@ public class TelegramNotificationServiceImpl extends TelegramLongPollingBot
             String text = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
             String[] parts = text.split(" ");
-            long userId;
             if (parts.length > 1 && parts[COMMAND_INDEX].equalsIgnoreCase(START_COMMAND)
                     && StringUtils.hasText(parts[ID_INDEX])) {
-                userId = Long.parseLong(parts[ID_INDEX]);
+                long userId = Long.parseLong(parts[ID_INDEX]);
                 handleUserLinking(userId, chatId);
             } else {
                 sendMessageToCustomer(chatId, ENTER_ID_MESSAGE);
@@ -109,7 +110,7 @@ public class TelegramNotificationServiceImpl extends TelegramLongPollingBot
     private void handleUserLinking(Long userId, Long chatId) {
         userRepository.findByTgChatId(userId).ifPresentOrElse(
                 (user) -> {
-                    sendMessageToCustomer(chatId, NOTIFY_SUCCESS_MESSAGE);
+                    sendMessageToCustomer(chatId, RENOTIFY_SUCCESS_MESSAGE);
                     logger.info("User with ID {} is already linked to chat ID {}",
                             userId, chatId);
                 },

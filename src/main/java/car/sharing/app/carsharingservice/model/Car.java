@@ -2,10 +2,11 @@ package car.sharing.app.carsharingservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Getter;
@@ -31,13 +32,14 @@ public class Car {
     private String model;
     @Column(nullable = false)
     private String brand;
-    @OneToOne
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CarType carType;
     @Column(nullable = false)
     private int inventory;
     @Column(nullable = false)
     private BigDecimal feeUsd;
-    @Column(name = "is_deleted", columnDefinition = "TINYINT(1)", nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     public Car decreaseInventory() {
@@ -48,5 +50,12 @@ public class Car {
     public Car increaseInventory() {
         inventory++;
         return this;
+    }
+
+    public enum CarType {
+        SEDAN,
+        SUV,
+        UNIVERSAL,
+        HATCHBACK
     }
 }

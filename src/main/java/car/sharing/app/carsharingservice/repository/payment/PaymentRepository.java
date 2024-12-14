@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    @Query("FROM Payment p WHERE p.rental.car.id = :id")
+    @Query("FROM Payment p WHERE p.rental.user.id = :id")
     List<Payment> findAllByUserId(@Param("id") Long userId);
 
     List<Payment> findAllByStatus(Payment.Status status);
