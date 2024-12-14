@@ -17,9 +17,14 @@ This project is an implementation of a Car Sharing Service REST API, based on th
 - Java: Core language for backend development.
 - Spring Boot: Framework for building the REST API.
 - Hibernate: ORM for database interaction.
-- MySQL: Relational database for storing data.
-JUnit 5: Testing framework.
-Mockito: Mocking framework for unit tests.
+- Database: MySQL for production; H2 for testing
+- JUnit 5: Testing framework.
+- Mockito: Mocking framework for unit tests.
+- Build Tool: Maven
+- Containerization: Docker
+- Security: Spring Security with JWT for authentication
+- Payment Integration: Stripe API for handling payments
+- Notifications: Telegram Bot API for administrative alerts
 
 ## Installation
 
