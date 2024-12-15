@@ -3,7 +3,7 @@
 
 ## Description
 
-This project is an implementation of a Car Sharing Service REST API, based on the requirements provided in mate-academy/jv-car-sharing-service. The service enables managing cars, users, payments, and rentals in a car-sharing system.
+This project is an implementation of a Car Sharing Service REST API. The service enables managing cars, users, payments, and rentals in a car-sharing system.
 
 ## Features
 
