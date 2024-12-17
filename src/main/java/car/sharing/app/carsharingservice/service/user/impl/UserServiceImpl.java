@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
-    private static final String DEFAULT_ROLE = "CUSTOMER";
+    private static final String DEFAULT_ROLE = "customer";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Passwords do not match");
         }
         if (userRepository.findByEmail(userRequestDto.getEmail()).isEmpty()) {
-            User user = userMapper.toModel(userRequestDto);
+            User user = userMapper.toModelFromRegisterForm(userRequestDto);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(new HashSet<>(Set.of(getRoleByRoleName(DEFAULT_ROLE))));
             return userMapper.toDto(userRepository.save(user));
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         Set<Role> newRoles = new HashSet<>(roles);
         newRoles.add(roleFromBd);
         user.setRoles(newRoles);
-        return userMapper.toDto(userRepository.save(user)).setRole(role.toUpperCase());
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
@@ -61,11 +61,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateProfileData(Long id, UserDto dto) {
-        User user = getUserById(id);
-        user.setEmail(dto.getEmail() == null ? user.getEmail() : dto.getEmail());
-        user.setFirstName(dto.getFirstName() == null ? user.getFirstName() : dto.getFirstName());
-        user.setLastName(dto.getLastName() == null ? user.getLastName() : dto.getLastName());
-        return userMapper.toDto(userRepository.save(user));
+        User model = getUserById(id);
+        User proxy = userMapper.toModel(dto);
+        return userMapper.toDto(userRepository.save(userMapper.updateUser(model, proxy)));
     }
 
     private User getUserById(Long id) {

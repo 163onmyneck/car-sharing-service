@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @RequiredArgsConstructor
 @ExtendWith(MockitoExtension.class)
 class CarServiceImplTest {
+    private static final Long DEFAULT_ID = 1L;
     @Mock
     private CarRepository carRepository;
 
@@ -42,7 +43,7 @@ class CarServiceImplTest {
                 .setCarType(Car.CarType.SEDAN)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
-                .setId(1L);
+                .setId(DEFAULT_ID);
 
         CarRequestDto request = new CarRequestDto()
                 .setModel(expected.getModel())
@@ -76,7 +77,7 @@ class CarServiceImplTest {
                 .setBrand("brand1")
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
-                .setId(1L)
+                .setId(DEFAULT_ID)
                 .setCarType(Car.CarType.SEDAN);
 
         Car car2 = new Car()
@@ -84,7 +85,7 @@ class CarServiceImplTest {
                 .setBrand("brand2")
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
-                .setId(2L)
+                .setId(DEFAULT_ID + 1L)
                 .setCarType(Car.CarType.SEDAN);
 
         CarResponseDto carResponseDto1 = new CarResponseDto()
@@ -132,7 +133,7 @@ class CarServiceImplTest {
                 .setCarType(Car.CarType.SEDAN)
                 .setFeeUsd(BigDecimal.TEN)
                 .setInventory(100)
-                .setId(1L);
+                .setId(DEFAULT_ID);
 
         CarRequestDto requestForExpected = new CarRequestDto()
                 .setModel(expected.getModel())
@@ -161,9 +162,9 @@ class CarServiceImplTest {
     @Test
     @DisplayName("Given incorrect car id. Should throw EntityNotFoundException")
     void update_InvalidId_ShouldReturnCarDto() {
-        Mockito.when(carRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        Mockito.when(carRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> carService.update(
-                Mockito.anyLong(), new CarRequestDto()));
+                DEFAULT_ID, new CarRequestDto()));
     }
 }

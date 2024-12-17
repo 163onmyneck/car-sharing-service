@@ -42,11 +42,8 @@ public class CarServiceImpl implements CarService {
     public CarResponseDto update(Long id, CarRequestDto dto) {
         Car car = carRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Can not find car with id " + id));
-        car.setBrand(dto.getBrand() != null ? dto.getBrand() : car.getBrand());
-        car.setModel(dto.getModel() != null ? dto.getModel() : car.getModel());
-        car.setFeeUsd(dto.getFeeUsd() != null ? dto.getFeeUsd() : car.getFeeUsd());
-        car.setCarType(dto.getCarType() != null ? dto.getCarType() : car.getCarType());
-        return carMapper.toDto(carRepository.save(car));
+        Car proxy = carMapper.toModel(dto);
+        return carMapper.toDto(carRepository.save(carMapper.updateCar(car, proxy)));
     }
 
     @Override

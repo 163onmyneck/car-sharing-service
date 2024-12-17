@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -25,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 @Transactional
-@ActiveProfiles("test")
+@ActiveProfiles(value = "test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest {
     protected static MockMvc mockMvc;
@@ -49,7 +48,8 @@ class UserControllerTest {
             "classpath:database/user/02-insert-2-users.sql",
             "classpath:database/user/03-insert-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @WithMockUser(username = "username", roles = {"MANAGER"})
+    @WithUserDetails(userDetailsServiceBeanName = "customUserDetailsService",
+            value = "test1@gmail.com")
     void updateRole() throws Exception {
         mockMvc.perform(put("/users/{id}/role", 2L)
                 .param("role", "manager"))
@@ -64,11 +64,11 @@ class UserControllerTest {
             "classpath:database/user/02-insert-2-users.sql",
             "classpath:database/user/03-insert-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @WithUserDetails("test1@gmail.com")
+    @WithUserDetails(userDetailsServiceBeanName = "customUserDetailsService",
+            value = "test1@gmail.com")
     void getMyProfile() throws Exception {
         UserDto expected = new UserDto()
                 .setId(1L)
-                .setRole(Role.RoleName.MANAGER.name())
                 .setEmail("test1@gmail.com")
                 .setFirstName("Name1")
                 .setLastName("Lastname1");

@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application.properties")
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
 class PaymentServiceImplTest {
