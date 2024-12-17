@@ -3,7 +3,7 @@
 
 ## Description
 
-This project is an implementation of a Car Sharing Service REST API, based on the requirements provided in mate-academy/jv-car-sharing-service. The service enables managing cars, users, payments, and rentals in a car-sharing system.
+This project is an implementation of a Car Sharing Service REST API. The service enables managing cars, users, payments, and rentals in a car-sharing system.
 
 ## Features
 
@@ -17,9 +17,14 @@ This project is an implementation of a Car Sharing Service REST API, based on th
 - Java: Core language for backend development.
 - Spring Boot: Framework for building the REST API.
 - Hibernate: ORM for database interaction.
-- MySQL: Relational database for storing data.
-JUnit 5: Testing framework.
-Mockito: Mocking framework for unit tests.
+- Database: MySQL for production; H2 for testing
+- JUnit 5: Testing framework.
+- Mockito: Mocking framework for unit tests.
+- Build Tool: Maven
+- Containerization: Docker
+- Security: Spring Security with JWT for authentication
+- Payment Integration: Stripe API for handling payments
+- Notifications: Telegram Bot API for administrative alerts
 
 ## Installation
 
@@ -50,59 +55,96 @@ you can use `resources/application.properties` for your MySQL database credentia
 6. Run the application:
  `bash
    mvn spring-boot:run
-`
+
+### Database Schema
+
+#### Users
+| Column Name   | Type      | Constraints                 | Description                                |
+|---------------|-----------|-----------------------------|--------------------------------------------|
+| `id`          | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each user.          |
+| `email`       | VARCHAR   | NOT NULL, UNIQUE            | User's email address.                     |
+| `first_name`  | VARCHAR   | NOT NULL                    | User's first name.                        |
+| `last_name`   | VARCHAR   | NOT NULL                    | User's last name.                         |
+| `password`    | VARCHAR   | NOT NULL                    | Hashed user password.                     |
+| `is_deleted`  | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+| `tg_chat_id`  | BIGINT    | NULLABLE                    | Telegram chat ID for notifications.       |
+
+---
+
+#### Roles
+| Column Name   | Type      | Constraints                 | Description                                |
+|---------------|-----------|-----------------------------|--------------------------------------------|
+| `id`          | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each role.          |
+| `role_name`   | ENUM      | NOT NULL                    | Role name: `MANAGER`, `CUSTOMER`.         |
+
+**Relation**: Many-to-Many with `Users` through `users_roles`.
+
+---
+
+#### Cars
+| Column Name   | Type      | Constraints                 | Description                                |
+|---------------|-----------|-----------------------------|--------------------------------------------|
+| `id`          | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each car.           |
+| `model`       | VARCHAR   | NOT NULL                    | Model of the car.                         |
+| `brand`       | VARCHAR   | NOT NULL                    | Brand of the car.                         |
+| `car_type`    | ENUM      | NOT NULL                    | Car type: `SEDAN`, `SUV`, `UNIVERSAL`, etc. |
+| `inventory`   | INT       | NOT NULL                    | Number of cars available.                 |
+| `fee_usd`     | DECIMAL   | NOT NULL                    | Rental fee per day in USD.                |
+| `is_deleted`  | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+
+---
+
+#### Rentals
+| Column Name       | Type      | Constraints                 | Description                                |
+|-------------------|-----------|-----------------------------|--------------------------------------------|
+| `id`              | BIGINT    | PRIMARY KEY, AUTO_INCREMENT | Unique identifier for each rental.        |
+| `rental_date`     | DATE      | NOT NULL                    | Start date of the rental.                 |
+| `return_date`     | DATE      | NOT NULL                    | Expected return date.                     |
+| `actual_return_date` | DATE   | NULLABLE                    | Actual date when the car was returned.    |
+| `car_id`          | BIGINT    | FOREIGN KEY                 | Associated car (from `Cars`).             |
+| `user_id`         | BIGINT    | FOREIGN KEY                 | Associated user (from `Users`).           |
+| `is_deleted`      | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+| `is_active`       | BOOLEAN   | DEFAULT TRUE                | Indicates whether the rental is ongoing.  |
+
+---
+
+#### Payments
+| Column Name       | Type      | Constraints                 | Description                                |
+|-------------------|-----------|-----------------------------|--------------------------------------------|
+| `id`              | BIGINT    | PRIMARY KEY                 | Unique identifier for each payment.       |
+| `rental_id`       | BIGINT    | FOREIGN KEY                 | Associated rental (from `Rentals`).       |
+| `status`          | ENUM      | NOT NULL                    | Payment status: `PENDING`, `PAID`, etc.   |
+| `type`            | ENUM      | NOT NULL                    | Payment type: `PAYMENT`, `FINE`.          |
+| `session_url`     | VARCHAR   | NOT NULL                    | URL for payment session.                  |
+| `session_id`      | VARCHAR   | NOT NULL                    | Identifier for payment session.           |
+| `amount_to_pay`   | DECIMAL   | NOT NULL                    | Total amount to be paid in USD.           |
+| `is_deleted`      | BOOLEAN   | DEFAULT FALSE               | Soft delete indicator.                    |
+
+---
+
+### Relationships
+1. **Users and Roles**:
+   - Many-to-Many relationship through the `users_roles` join table.
+2. **Users and Rentals**:
+   - One-to-Many relationship (a user can have multiple rentals).
+3. **Cars and Rentals**:
+   - One-to-Many relationship (a car can be rented multiple times).
+4. **Rentals and Payments**:
+   - One-to-One relationship (payment can not exist without rental).
+
 
 ## Usage
 
-1. **User Registration:**  
-   Users can register by using the URL:  
-   `POST http://localhost:8081/users/register`  
-   Example payload:  
-   ```json
-   {
-       "email": "john_doe@test.com",
-       "password": "password123",
-       "repeatPassword: "password123"
-   }
-2. **Get Your Profile Data:**
-   User can view his profile:
-  `GET http://localhost:8081/me`
+User Operations:
+- Register and log in to access car rental services.
+- Browse available cars and filter based on criteria.
+- Initiate rentals and process payments through the integrated payment gateway.
 
-3. **Get Your Profile Data:**
-   User can also update his profile info
-   `POST http://localhost:8081/me`
+## Administrator Operations:
 
-4. **Get User Details:**
-   Users can view their profile details by ID:
-  `GET http://localhost:8081/users/{id}`
-
-5. **Update User Details:**
-    Managers can update users' roles using:
-    `PUT http://localhost:8081/users/{id}/role`
-
-6. **Create Rental**
-   Users can create rentals
-   `POST http://localhost:8081/rentals/create-rental`
-   Example payload:  
-   ```json
-   {
-       "returnDate": "2024-10-11",
-       "carId": 5,
-   }
-
-7. **Get All Rentals By User Id**
-   Users can create rentals
-   `GET http://localhost:8081/rentals`
-   
-8. **Return Rental**
-   Users can return their rentals
-   `POST http://localhost:8081/rentals/{id}/return`
-   
-9. **Search Rentals**
-   Users can find their rentals with special credentials
-   `POST http://localhost:8081/rentals/search`
-
-I will finish later
+- Manage car inventory by adding, updating, or removing vehicles.
+- Monitor active rentals and track overdue returns.
+- Manage user roles and permissions.
 
 ## Contributing
 
