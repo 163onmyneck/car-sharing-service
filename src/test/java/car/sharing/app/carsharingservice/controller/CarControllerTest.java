@@ -130,7 +130,7 @@ class CarControllerTest {
     }
 
     @Test
-    @DisplayName("get all available cars")
+    @DisplayName("update by id")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
             "classpath:database/car/01-create-and-insert-cars.sql"

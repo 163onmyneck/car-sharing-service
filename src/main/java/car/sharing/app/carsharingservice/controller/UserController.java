@@ -4,6 +4,7 @@ import car.sharing.app.carsharingservice.dto.user.UserDto;
 import car.sharing.app.carsharingservice.model.User;
 import car.sharing.app.carsharingservice.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -25,22 +26,23 @@ public class UserController {
     @PutMapping("/{id}/role")
     @PreAuthorize("hasRole('MANAGER')")
     @ResponseStatus(HttpStatus.OK)
-    public void updateRole(@PathVariable Long id,
+    public UserDto updateRole(@PathVariable Long id,
                            @RequestParam String role) {
-        userService.updateRole(id, role);
+        return userService.updateRole(id, role);
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('MANAGER', 'CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto getMyProfile(Authentication authentication) {
+    public UserDto getMyProfile(@Autowired Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return userService.getCurrentProfileInfo(user.getId());
     }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'CUSTOMER')")
     @PutMapping("/me")
-    public UserDto updateProfile(Authentication authentication,
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto updateProfile(@Autowired Authentication authentication,
                                          @RequestBody UserDto userProfileData) {
         User user = (User) authentication.getPrincipal();
         return userService.updateProfileData(user.getId(), userProfileData);

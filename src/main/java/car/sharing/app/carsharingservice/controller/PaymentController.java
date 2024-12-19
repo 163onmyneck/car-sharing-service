@@ -6,11 +6,13 @@ import car.sharing.app.carsharingservice.service.payment.PaymentService;
 import java.net.MalformedURLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/payments")
@@ -20,11 +22,13 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public List<PaymentDto> getAllPayments(@PathVariable Long id) {
         return paymentService.getAllPaymentsByUserId(id);
     }
 
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public PaymentDto createPayment(@RequestBody PaymentRequestDto paymentDto)
             throws MalformedURLException {
         return paymentService.createPayment(paymentDto);

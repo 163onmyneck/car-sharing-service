@@ -19,10 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthenticationControllerTest {
@@ -44,8 +42,10 @@ class AuthenticationControllerTest {
     @Test
     @DisplayName("Register with valid dto")
     @Sql(scripts = {
+            "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql"
+            "classpath:database/user/03-fill-users-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void register() throws Exception {
         UserRegistrationRequestDto dto = new UserRegistrationRequestDto()

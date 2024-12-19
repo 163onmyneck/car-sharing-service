@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @ActiveProfiles("test")
+@Transactional
 class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
@@ -21,12 +23,13 @@ class UserRepositoryTest {
     @DisplayName("find by email, should return 1 user")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql",
+            "classpath:database/user/03-fill-users-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    void findByEmail() {
+    void findByEmailFetchRoles() {
         String expectedEmail = "test1@gmail.com";
-        String actualEmail = userRepository.findByEmail(expectedEmail).get().getEmail();
+        String actualEmail = userRepository.findByEmailFetchRoles(expectedEmail).get().getEmail();
 
         Assertions.assertEquals(actualEmail, expectedEmail);
     }
@@ -35,15 +38,16 @@ class UserRepositoryTest {
     @DisplayName("get all by role, should return 2 users")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql"
+            "classpath:database/user/03-fill-users-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    void getAllByRole() {
+    void getAllByRoleFetchRoles() {
         int expectedCustomerListSize = 2;
         int expectedManagerListSize = 1;
 
-        List<User> customers = userRepository.getAllByRole(Role.RoleName.CUSTOMER);
-        List<User> managers = userRepository.getAllByRole(Role.RoleName.MANAGER);
+        List<User> customers = userRepository.getAllByRoleFetchRoles(Role.RoleName.CUSTOMER);
+        List<User> managers = userRepository.getAllByRoleFetchRoles(Role.RoleName.MANAGER);
 
         int actualCustomerListSize = customers.size();
         int actualManagerListSize = managers.size();
@@ -56,8 +60,9 @@ class UserRepositoryTest {
     @DisplayName("find by tg chat id,expecting user from db")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql"
+            "classpath:database/user/03-fill-users-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findByTgChatId() {
         Long tgChatId = 343241L;

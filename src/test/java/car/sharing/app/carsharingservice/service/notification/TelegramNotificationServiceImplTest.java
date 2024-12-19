@@ -23,6 +23,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @ExtendWith(MockitoExtension.class)
 class TelegramNotificationServiceImplTest {
+    private static final Long DEFAULT_ID = 1L;
     @InjectMocks
     private TelegramNotificationServiceImpl notificationService;
     @Mock
@@ -34,7 +35,7 @@ class TelegramNotificationServiceImplTest {
     @DisplayName("Should link up user's chat id with user")
     void onUpdateReceived_ShouldLinkUpUser() {
         Chat chat = new Chat();
-        chat.setId(1L);
+        chat.setId(DEFAULT_ID);
         Update update = new Update();
         update.setMessage(new Message());
         update.getMessage().setText("/start 1");
@@ -43,9 +44,9 @@ class TelegramNotificationServiceImplTest {
 
         TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
 
-        User user = new User().setId(1L).setTgChatId(null);
-        Mockito.when(userRepository.findByTgChatId(1L)).thenReturn(Optional.empty());
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        User user = new User().setId(DEFAULT_ID).setTgChatId(null);
+        Mockito.when(userRepository.findByTgChatId(DEFAULT_ID)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(user));
         Mockito.doNothing().when(spyService).sendMessageToCustomer(
                 Mockito.anyLong(), Mockito.anyString());
 
@@ -59,7 +60,7 @@ class TelegramNotificationServiceImplTest {
     @DisplayName("Given existing user id, should send message back")
     void onUpdateReceived_GivenExistingUserId_ShouldSendMessage() {
         Chat chat = new Chat();
-        chat.setId(1L);
+        chat.setId(DEFAULT_ID);
         Update update = new Update();
         update.setMessage(new Message());
         update.getMessage().setText("/start 1");
@@ -68,8 +69,8 @@ class TelegramNotificationServiceImplTest {
 
         TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
 
-        User user = new User().setId(1L).setTgChatId(null);
-        Mockito.when(userRepository.findByTgChatId(1L)).thenReturn(
+        User user = new User().setId(DEFAULT_ID).setTgChatId(null);
+        Mockito.when(userRepository.findByTgChatId(DEFAULT_ID)).thenReturn(
                 Optional.of(user));
         Mockito.doNothing().when(spyService).sendMessageToCustomer(
                 Mockito.anyLong(), Mockito.anyString());
@@ -84,7 +85,7 @@ class TelegramNotificationServiceImplTest {
     @DisplayName("Given invalid user id, should throw exception")
     void onUpdateReceived_InvalidUserId_ShouldThrowException() {
         Chat chat = new Chat();
-        chat.setId(1L);
+        chat.setId(DEFAULT_ID);
         Update update = new Update();
         update.setMessage(new Message());
         update.getMessage().setText("/start 1");
@@ -93,7 +94,7 @@ class TelegramNotificationServiceImplTest {
 
         TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
 
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> spyService.onUpdateReceived(update));
     }
@@ -102,7 +103,7 @@ class TelegramNotificationServiceImplTest {
     @DisplayName("Given invalid form, should send message back")
     void onUpdateReceived_UserGaveInvalidForm_ShouldSendTextBack() {
         Chat chat = new Chat();
-        chat.setId(1L);
+        chat.setId(DEFAULT_ID);
         Update update = new Update();
         update.setMessage(new Message());
         update.getMessage().setText(". stayt 23413");
@@ -151,14 +152,14 @@ class TelegramNotificationServiceImplTest {
     @DisplayName("Message is null, should throw IllegalArgumentException")
     void sendMessageToCustomer_MessageIsNull_ShouldThrowIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class,
-                () -> notificationService.sendMessageToCustomer(1L, null));
+                () -> notificationService.sendMessageToCustomer(DEFAULT_ID, null));
     }
 
     @Test
     @DisplayName("Message does not have text, should throw IllegalArgumentException")
     void sendMessageToCustomer_MessageDoesNotHaveText_ShouldThrowException() {
         assertThrows(IllegalArgumentException.class,
-                () -> notificationService.sendMessageToCustomer(1L, ""));
+                () -> notificationService.sendMessageToCustomer(DEFAULT_ID, ""));
     }
 
     @Test

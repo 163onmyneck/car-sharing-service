@@ -1,5 +1,6 @@
 package car.sharing.app.carsharingservice.security;
 
+import car.sharing.app.carsharingservice.model.User;
 import car.sharing.app.carsharingservice.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +15,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow(
-                () -> new UsernameNotFoundException(username));
+        System.out.println("Loading user: " + username);
+        User user = userRepository.findByEmailFetchRoles(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user;
     }
 }

@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @DataJpaTest
 @ActiveProfiles("test")
 class RoleRepositoryTest {
@@ -20,7 +22,6 @@ class RoleRepositoryTest {
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql",
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findRoleByRoleName() {
         Role.RoleName actualRoleName = roleRepository.findRoleByRoleName(

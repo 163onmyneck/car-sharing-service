@@ -53,7 +53,7 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new EntityNotFoundException("Cannot find user with id "
                                                         + requestDto.getUserId())));
 
-        List<User> managers = userRepository.getAllByRole(Role.RoleName.MANAGER);
+        List<User> managers = userRepository.getAllByRoleFetchRoles(Role.RoleName.MANAGER);
 
         notificationService.sendMessageToAllManagers("Rental with id " + rental.getId()
                     + " was created. More details: " + rental, managers);
@@ -69,7 +69,7 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     public List<RentalResponseDto> getAllRentalsByUserId(Long userId) {
-        return rentalRepository.getAllRentalsByUserId(userId).stream()
+        return rentalRepository.getAllRentalsByUserIdFetchCars(userId).stream()
                 .map(rentalMapper::toDto)
                 .toList();
     }
@@ -86,7 +86,7 @@ public class RentalServiceImpl implements RentalService {
         RentalResponseDto rentalDto = rentalMapper.toDto(rentalRepository.save(rental));
         rentalDto.setCarResponseDto(carMapper.toDto(updatedCar));
         notificationService.sendMessageToAllManagers("Rental with id " + rental.getId()
-                + " was returned. More details: " + rental, userRepository.getAllByRole(
+                + " was returned. More details: " + rental, userRepository.getAllByRoleFetchRoles(
                                                                         Role.RoleName.MANAGER));
         notificationService.sendMessageToCustomer(rental.getUser().getTgChatId(),
                 "Your rental with id " + rental.getId() + " was returned. More details: "

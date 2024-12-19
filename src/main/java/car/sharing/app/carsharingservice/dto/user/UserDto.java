@@ -10,5 +10,4 @@ public class UserDto {
     private String email;
     private String lastName;
     private String firstName;
-    private String role;
 }

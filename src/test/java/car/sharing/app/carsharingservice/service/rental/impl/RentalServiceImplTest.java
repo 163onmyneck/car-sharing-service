@@ -219,7 +219,8 @@ class RentalServiceImplTest {
 
         List<RentalResponseDto> expectedRentals = List.of(rentalResponseDto1, rentalResponseDto2);
 
-        Mockito.when(rentalRepository.getAllRentalsByUserId(user.getId())).thenReturn(rentals);
+        Mockito.when(rentalRepository.getAllRentalsByUserIdFetchCars(user.getId()))
+                                                            .thenReturn(rentals);
         Mockito.when(rentalMapper.toDto(rental1)).thenReturn(rentalResponseDto1);
         Mockito.when(rentalMapper.toDto(rental2)).thenReturn(rentalResponseDto2);
 
