@@ -88,6 +88,7 @@ you can use `resources/application.properties` for your MySQL database credentia
 6. Run the application:
  `bash
    mvn spring-boot:run
+`
 
 ### Database Schema
 
