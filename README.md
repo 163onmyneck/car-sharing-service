@@ -14,25 +14,58 @@ This project is an implementation of a Car Sharing Service REST API. The service
 
 ## Technologies Used
 
-- Java: Core language for backend development.
-- Spring Boot: Framework for building the REST API.
-- Hibernate: ORM for database interaction.
-- Database: MySQL for production; H2 for testing
-- JUnit 5: Testing framework.
-- Mockito: Mocking framework for unit tests.
-- Build Tool: Maven
-- Containerization: Docker
-- Security: Spring Security with JWT for authentication
-- Payment Integration: Stripe API for handling payments
-- Notifications: Telegram Bot API for administrative alerts
+Here is a list of all the technologies and libraries used in the project along with their respective versions:
+
+#### **Spring Boot Framework**
+- **spring-boot-starter-parent**: 3.3.4
+- **spring-boot-starter-data-jpa**: Included in Spring Boot
+- **spring-boot-starter-web**: Included in Spring Boot
+- **spring-boot-starter-security**: Included in Spring Boot
+- **spring-boot-starter-test**: Included in Spring Boot
+
+#### **Database**
+- **H2 Database**: 2.x (for testing)
+- **MySQL Connector**: 8.0.28
+- **Hibernate Core**: 6.5.3.Final
+- **Liquibase Core**: 4.27.0
+
+#### **Validation**
+- **Jakarta Validation API**: 3.0.2
+
+#### **Security and JWT**
+- **Spring Security**: Included in Spring Boot
+- **JSON Web Token (JWT)**:
+  - **jjwt-api**: 0.11.5
+  - **jjwt-impl**: 0.11.5
+  - **jjwt-jackson**: 0.11.5
+
+#### **Dependency Injection**
+- **Lombok**: Included (Optional)
+- **Lombok-Mapstruct-Binding**: 0.2.0
+- **Mapstruct**:
+  - **mapstruct**: 1.5.5.Final
+  - **mapstruct-processor**: 1.5.5.Final
+
+#### **Payment Processing**
+- **Stripe Java SDK**: 28.0.0
+
+#### **Messaging**
+- **Telegram Bots API**: 5.3.0
+
+#### **Testing**
+- **Spring Security Test**: Included in Spring Boot
+- **Spring Boot Test**: Included in Spring Boot
+
+#### **Code Quality**
+- **Checkstyle Plugin**: 3.3.0
+
+#### **Build and Plugins**
+- **Maven**:
+  - **Spring Boot Maven Plugin**: Included in Spring Boot
+  - **Liquibase Maven Plugin**: 4.27.0
+  - **Maven Checkstyle Plugin**: 3.3.0
 
 ## Installation
-
-### Prerequisites
-
-- Java 11 or higher
-- Maven
-- MySQL
 
 ### Steps
 
