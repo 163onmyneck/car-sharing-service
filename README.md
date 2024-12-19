@@ -166,19 +166,23 @@ you can use `resources/application.properties` for your MySQL database credentia
 4. **Rentals and Payments**:
    - One-to-One relationship (payment can not exist without rental).
 
-
 ## Usage
 
-User Operations:
-- Register and log in to access car rental services.
-- Browse available cars and filter based on criteria.
-- Initiate rentals and process payments through the integrated payment gateway.
-
-## Administrator Operations:
-
-- Manage car inventory by adding, updating, or removing vehicles.
-- Monitor active rentals and track overdue returns.
-- Manage user roles and permissions.
+1. **User Registration**: Users can register by URL: `http://localhost:8081/auth/register`.
+2. **User Login**: Users can log in by URL: `http://localhost:8081/auth/login`.
+3. **View All Cars**: Users can get the list of all available cars by URL: `http://localhost:8081/cars`.
+4. **View Car by ID**: Users can get details of a specific car by URL: `http://localhost:8081/cars/{id}`.
+5. **Create Car**: Managers can create a new car by URL: `http://localhost:8081/cars`.
+6. **Update Car**: Managers can update a car by URL: `http://localhost:8081/cars/{id}`.
+7. **Delete Car**: Managers can delete a car by URL: `http://localhost:8081/cars/{id}`.
+8. **Create Rental**: Users can create a new rental by URL: `http://localhost:8081/rentals/create-rental`.
+9. **Return Rental**: Users can return a rental by URL: `http://localhost:8081/rentals/{id}/return`.
+10. **View User Rentals**: Users can get their rental history by URL: `http://localhost:8081/rentals`.
+11. **Create Payment**: Users can initiate a payment by URL: `http://localhost:8081/payments/create`.
+12. **View Payments**: Users can view their payment history by URL: `http://localhost:8081/payments/{id}`.
+13. **Update User Role**: Managers can update a user's role by URL: `http://localhost:8081/users/{id}/role`.
+14. **View Profile**: Users can view their profile by URL: `http://localhost:8081/users/me`.
+15. **Update Profile**: Users can update their profile by URL: `http://localhost:8081/users/me`.
 
 ## Contributing
 
