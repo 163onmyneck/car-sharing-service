@@ -1,2 +1,2 @@
-INSERT INTO roles (role_name) VALUES ('MANAGER');
-INSERT INTO roles (role_name) VALUES ('CUSTOMER');
+INSERT INTO roles (id, role_name) VALUES (1, 'MANAGER');
+INSERT INTO roles (id, role_name) VALUES (2, 'CUSTOMER');
