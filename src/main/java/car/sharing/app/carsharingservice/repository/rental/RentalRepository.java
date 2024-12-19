@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long>,
         JpaSpecificationExecutor<Rental> {
-    @Query("FROM Rental r LEFT OUTER JOIN r.car WHERE r.user.id = :id "
+    @Query("FROM Rental r LEFT JOIN FETCH r.car WHERE r.user.id = :id "
             + "AND r.isDeleted = false")
-    List<Rental> getAllRentalsByUserId(@Param("id") Long userId);
+    List<Rental> getAllRentalsByUserIdFetchCars(@Param("id") Long userId);
 }

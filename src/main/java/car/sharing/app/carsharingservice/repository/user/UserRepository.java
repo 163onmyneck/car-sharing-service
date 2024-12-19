@@ -12,11 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("from User u LEFT JOIN FETCH u.roles WHERE u.email =:email")
-    Optional<User> findByEmail(@Param("email") String email);
+    Optional<User> findByEmailFetchRoles(@Param("email") String email);
 
     @Query("FROM User u JOIN FETCH u.roles r "
             + "WHERE r.roleName = :roleName AND u.tgChatId IS NOT NULL")
-    List<User> getAllByRole(@Param("roleName") Role.RoleName roleName);
+    List<User> getAllByRoleFetchRoles(@Param("roleName") Role.RoleName roleName);
 
     @Query("FROM User WHERE tgChatId = :tgChatId")
     Optional<User> findByTgChatId(@Param("tgChatId") Long tgChatId);

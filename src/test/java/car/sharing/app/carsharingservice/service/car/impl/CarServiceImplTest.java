@@ -151,6 +151,9 @@ class CarServiceImplTest {
                 .setFeeUsd(expected.getFeeUsd());
 
         Mockito.when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
+        Mockito.when(carMapper.toModel(requestForExpected)).thenReturn(car);
+        Mockito.when(carMapper.updateCar(Mockito.any(Car.class), Mockito.any(Car.class)))
+                .thenReturn(car);
         Mockito.when(carRepository.save(Mockito.any(Car.class))).thenReturn(car);
         Mockito.when(carMapper.toDto(car)).thenReturn(expected);
 

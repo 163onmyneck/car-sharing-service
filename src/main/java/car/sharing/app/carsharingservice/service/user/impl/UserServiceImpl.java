@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
         if (!userRequestDto.getPassword().equals(userRequestDto.getRepeatPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
-        if (userRepository.findByEmail(userRequestDto.getEmail()).isEmpty()) {
+        if (userRepository.findByEmailFetchRoles(userRequestDto.getEmail()).isEmpty()) {
             User user = userMapper.toModelFromRegisterForm(userRequestDto);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(new HashSet<>(Set.of(getRoleByRoleName(DEFAULT_ROLE))));

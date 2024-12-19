@@ -70,7 +70,7 @@ class UserServiceImplTest {
                 .setLastName(user.getLastName())
                 .setRepeatPassword(user.getPassword());
 
-        Mockito.when(userRepository.findByEmail(expectedUserDto.getEmail()))
+        Mockito.when(userRepository.findByEmailFetchRoles(expectedUserDto.getEmail()))
                 .thenReturn(Optional.empty());
         Mockito.when(userMapper.toModelFromRegisterForm(requestDto)).thenReturn(user);
         Mockito.when(passwordEncoder.encode(user.getPassword()))
@@ -98,7 +98,7 @@ class UserServiceImplTest {
                 .setLastName("lastName")
                 .setRepeatPassword("password");
 
-        Mockito.when(userRepository.findByEmail(requestDto.getEmail()))
+        Mockito.when(userRepository.findByEmailFetchRoles(requestDto.getEmail()))
                 .thenReturn(Optional.of(new User()));
 
         assertThrows(RegistrationException.class, () -> userService.register(requestDto));
@@ -141,12 +141,15 @@ class UserServiceImplTest {
     void updateRole_InvalidUserId_ShouldReturnUserDto() {
         User user = new User().setId(1L).setRoles(Set.of(new Role(Role.RoleName.CUSTOMER)));
         Role newRole = new Role(Role.RoleName.MANAGER);
-        User updatedUser = new User().setId(1L).setRoles(Set.of(new Role(Role.RoleName.CUSTOMER), newRole));
+        User updatedUser = new User().setId(1L).setRoles(
+                Set.of(new Role(Role.RoleName.CUSTOMER), newRole));
 
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.MANAGER)).thenReturn(Optional.of(newRole));
+        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.MANAGER))
+                .thenReturn(Optional.of(newRole));
         Mockito.when(userRepository.save(user)).thenReturn(updatedUser);
-        Mockito.when(userMapper.toDto(updatedUser)).thenReturn(new UserDto().setId(1L).setEmail("test@example.com"));
+        Mockito.when(userMapper.toDto(updatedUser)).thenReturn(
+                new UserDto().setId(1L).setEmail("test@example.com"));
 
         UserDto result = userService.updateRole(1L, "MANAGER");
 
@@ -222,7 +225,8 @@ class UserServiceImplTest {
 
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         Mockito.when(userMapper.toModel(Mockito.any(UserDto.class))).thenReturn(user);
-        Mockito.when(userMapper.updateUser(Mockito.any(User.class), Mockito.any(User.class))).thenReturn(updatedUser);
+        Mockito.when(userMapper.updateUser(Mockito.any(User.class), Mockito.any(User.class)))
+                .thenReturn(updatedUser);
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(updatedUser);
         Mockito.when(userMapper.toDto(updatedUser)).thenReturn(expectedProfileData);
 

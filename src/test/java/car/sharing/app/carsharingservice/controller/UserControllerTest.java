@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import car.sharing.app.carsharingservice.dto.user.UserDto;
-import car.sharing.app.carsharingservice.model.Role;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,16 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-@Transactional
 @ActiveProfiles(value = "test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest {
@@ -43,13 +41,13 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Update user role")
+    @WithMockUser(username = "user", roles = {"MANAGER"})
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql",
+            "classpath:database/user/03-fill-users-roles.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @WithUserDetails(userDetailsServiceBeanName = "customUserDetailsService",
-            value = "test1@gmail.com")
     void updateRole() throws Exception {
         mockMvc.perform(put("/users/{id}/role", 2L)
                 .param("role", "manager"))
@@ -61,11 +59,12 @@ class UserControllerTest {
     @DisplayName("get user's profile")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql",
+            "classpath:database/user/03-fill-users-roles.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @WithUserDetails(userDetailsServiceBeanName = "customUserDetailsService",
-            value = "test1@gmail.com")
+    @WithUserDetails(value = "test1@gmail.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
     void getMyProfile() throws Exception {
         UserDto expected = new UserDto()
                 .setId(1L)
@@ -86,13 +85,15 @@ class UserControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test1@gmail.com")
-    @DisplayName("get user's profile")
+    @DisplayName("update user's profile")
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
+            "classpath:database/user/01-insert-roles.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql",
+            "classpath:database/user/03-fill-users-roles.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @WithUserDetails(value = "test1@gmail.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
     void updateProfile() throws Exception {
         String newEmail = "new@email.com";
         String newFirstName = "Oleh";

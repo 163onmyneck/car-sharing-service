@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @DataJpaTest
 @ActiveProfiles("test")
 class RentalRepositoryTest {
@@ -19,12 +21,11 @@ class RentalRepositoryTest {
     @Sql(scripts = {
             "classpath:database/clear-database.sql",
             "classpath:database/user/02-insert-2-users.sql",
-            "classpath:database/user/03-insert-roles.sql",
             "classpath:database/rental/02-insert-2-rentals.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void getAllRentalsByUserId() {
         int expectedSize = 2;
-        List<Rental> actual = rentalRepository.getAllRentalsByUserId(2L);
+        List<Rental> actual = rentalRepository.getAllRentalsByUserIdFetchCars(2L);
 
         Assertions.assertEquals(expectedSize, actual.size());
     }

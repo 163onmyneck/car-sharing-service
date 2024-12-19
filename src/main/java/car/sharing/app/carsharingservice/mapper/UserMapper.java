@@ -12,7 +12,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(config = MapperConfig.class)
 public interface UserMapper {
-    @Mapping(target = "role", ignore = true)
     UserDto toDto(User user);
 
     @Mapping(target = "id", ignore = true)
