@@ -2,6 +2,11 @@ package car.sharing.app.carsharingservice.service.payment.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import car.sharing.app.carsharingservice.dto.payment.PaymentDto;
 import car.sharing.app.carsharingservice.dto.payment.PaymentRequestDto;
@@ -30,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.TestPropertySource;
 
@@ -116,10 +120,10 @@ class PaymentServiceImplTest {
 
         final List<PaymentDto> expectedPaymentDtos = List.of(paymentDto1, paymentDto2);
 
-        Mockito.when(paymentRepository.findAllByUserId(user.getId()))
+        when(paymentRepository.findAllByUserId(user.getId()))
                 .thenReturn(payments);
-        Mockito.when(paymentMapper.toDto(payment1)).thenReturn(paymentDto1);
-        Mockito.when(paymentMapper.toDto(payment2)).thenReturn(paymentDto2);
+        when(paymentMapper.toDto(payment1)).thenReturn(paymentDto1);
+        when(paymentMapper.toDto(payment2)).thenReturn(paymentDto2);
 
         List<PaymentDto> actual = paymentService.getAllPaymentsByUserId(user.getId());
         assertEquals(expectedPaymentDtos, actual);
@@ -132,7 +136,7 @@ class PaymentServiceImplTest {
                 .setRentalId(DEFAULT_ID_VALUE)
                 .setType(String.valueOf(Payment.Type.PAYMENT));
 
-        Mockito.when(rentalRepository.findById(Mockito.anyLong()))
+        when(rentalRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> paymentService.createPayment(requestDto));
@@ -172,9 +176,9 @@ class PaymentServiceImplTest {
                 .setId(DEFAULT_ID_VALUE)
                 .setRentalDate(LocalDate.now());
 
-        Mockito.when(rentalRepository.findById(Mockito.anyLong()))
+        when(rentalRepository.findById(anyLong()))
                 .thenReturn(Optional.of(rental));
-        Mockito.when(paymentStrategyFactory.getStrategy(Payment.Type.valueOf(
+        when(paymentStrategyFactory.getStrategy(Payment.Type.valueOf(
                 requestDto.getType().toUpperCase()))).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class,
@@ -217,11 +221,11 @@ class PaymentServiceImplTest {
         PaymentStrategy paymentStrategy = new RegularPaymentStrategy();
         BigDecimal expectedPrice = paymentStrategy.calculatePayment(rental);
 
-        Mockito.when(rentalRepository.findById(Mockito.anyLong()))
+        when(rentalRepository.findById(anyLong()))
                 .thenReturn(Optional.of(rental));
-        Mockito.when(paymentStrategyFactory.getStrategy(Payment.Type.valueOf(
+        when(paymentStrategyFactory.getStrategy(Payment.Type.valueOf(
                 requestDto.getType().toUpperCase()))).thenReturn(paymentStrategy);
-        Mockito.when(checkoutService.createCheckoutSession(expectedPrice))
+        when(checkoutService.createCheckoutSession(expectedPrice))
                 .thenReturn(null);
 
         assertThrows(IllegalArgumentException.class,
@@ -286,14 +290,14 @@ class PaymentServiceImplTest {
         expectedSession.setId(payment.getSessionId());
         expectedSession.setUrl(payment.getSessionUrl().toString());
 
-        Mockito.when(rentalRepository.findById(Mockito.anyLong()))
+        when(rentalRepository.findById(anyLong()))
                 .thenReturn(Optional.of(rental));
-        Mockito.when(paymentStrategyFactory.getStrategy(Payment.Type.valueOf(
+        when(paymentStrategyFactory.getStrategy(Payment.Type.valueOf(
                 requestDto.getType().toUpperCase()))).thenReturn(paymentStrategy);
-        Mockito.when(checkoutService.createCheckoutSession(expectedPrice))
+        when(checkoutService.createCheckoutSession(expectedPrice))
                 .thenReturn(expectedSession);
-        Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(payment);
-        Mockito.when(paymentMapper.toDto(payment)).thenReturn(expected);
+        when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
+        when(paymentMapper.toDto(payment)).thenReturn(expected);
 
         PaymentDto actual = paymentService.createPayment(requestDto);
 
@@ -354,13 +358,13 @@ class PaymentServiceImplTest {
 
         List<Payment> payments = List.of(payment1, payment2);
 
-        Mockito.when(paymentRepository.findAllByStatus(Payment.Status.PENDING))
+        when(paymentRepository.findAllByStatus(Payment.Status.PENDING))
                 .thenReturn(payments);
 
-        Mockito.when(checkoutService.getPaymentStatus("sessionId1")).thenReturn("PAID");
-        Mockito.when(checkoutService.getPaymentStatus("sessionId2")).thenReturn("EXPIRED");
+        when(checkoutService.getPaymentStatus("sessionId1")).thenReturn("PAID");
+        when(checkoutService.getPaymentStatus("sessionId2")).thenReturn("EXPIRED");
 
-        Mockito.when(paymentRepository.save(Mockito.any(Payment.class)))
+        when(paymentRepository.save(any(Payment.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         paymentService.checkAndUpdatePaymentStatus();
@@ -368,10 +372,10 @@ class PaymentServiceImplTest {
         assertEquals(Payment.Status.PAID, payment1.getStatus());
         assertEquals(Payment.Status.EXPIRED, payment2.getStatus());
 
-        Mockito.verify(paymentRepository, Mockito.times(1)).findAllByStatus(Payment.Status.PENDING);
-        Mockito.verify(checkoutService, Mockito.times(1)).getPaymentStatus("sessionId1");
-        Mockito.verify(checkoutService, Mockito.times(1)).getPaymentStatus("sessionId2");
-        Mockito.verify(paymentRepository, Mockito.times(1)).save(payment1);
-        Mockito.verify(paymentRepository, Mockito.times(1)).save(payment2);
+        verify(paymentRepository, times(1)).findAllByStatus(Payment.Status.PENDING);
+        verify(checkoutService, times(1)).getPaymentStatus("sessionId1");
+        verify(checkoutService, times(1)).getPaymentStatus("sessionId2");
+        verify(paymentRepository, times(1)).save(payment1);
+        verify(paymentRepository, times(1)).save(payment2);
     }
 }

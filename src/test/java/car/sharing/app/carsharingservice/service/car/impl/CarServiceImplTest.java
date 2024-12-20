@@ -2,6 +2,9 @@ package car.sharing.app.carsharingservice.service.car.impl;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
 
 import car.sharing.app.carsharingservice.dto.car.CarRequestDto;
 import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
@@ -18,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @RequiredArgsConstructor
@@ -60,9 +62,9 @@ class CarServiceImplTest {
                 .setInventory(expected.getInventory())
                 .setFeeUsd(expected.getFeeUsd());
 
-        Mockito.when(carMapper.toModel(Mockito.any(CarRequestDto.class))).thenReturn(car);
-        Mockito.when(carRepository.save(Mockito.any(Car.class))).thenReturn(car);
-        Mockito.when(carMapper.toDto(car)).thenReturn(expected);
+        when(carMapper.toModel(any(CarRequestDto.class))).thenReturn(car);
+        when(carRepository.save(any(Car.class))).thenReturn(car);
+        when(carMapper.toDto(car)).thenReturn(expected);
 
         CarResponseDto actual = carService.save(request);
 
@@ -108,9 +110,9 @@ class CarServiceImplTest {
 
         List<CarResponseDto> expected = List.of(carResponseDto1, carResponseDto2);
 
-        Mockito.when(carRepository.findAll()).thenReturn(cars);
-        Mockito.when(carMapper.toDto(car1)).thenReturn(carResponseDto1);
-        Mockito.when(carMapper.toDto(car2)).thenReturn(carResponseDto2);
+        when(carRepository.findAll()).thenReturn(cars);
+        when(carMapper.toDto(car1)).thenReturn(carResponseDto1);
+        when(carMapper.toDto(car2)).thenReturn(carResponseDto2);
 
         List<CarResponseDto> actual = carService.getAll();
 
@@ -120,8 +122,8 @@ class CarServiceImplTest {
     @Test
     @DisplayName("Given incorrect car id. Should throw EntityNotFoundException")
     void getInfo_IncorrectId_ShouldThrowException() {
-        Mockito.when(carRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> carService.getInfo(Mockito.anyLong()));
+        when(carRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> carService.getInfo(anyLong()));
     }
 
     @Test
@@ -150,12 +152,12 @@ class CarServiceImplTest {
                 .setInventory(expected.getInventory())
                 .setFeeUsd(expected.getFeeUsd());
 
-        Mockito.when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
-        Mockito.when(carMapper.toModel(requestForExpected)).thenReturn(car);
-        Mockito.when(carMapper.updateCar(Mockito.any(Car.class), Mockito.any(Car.class)))
+        when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
+        when(carMapper.toModel(requestForExpected)).thenReturn(car);
+        when(carMapper.updateCar(any(Car.class), any(Car.class)))
                 .thenReturn(car);
-        Mockito.when(carRepository.save(Mockito.any(Car.class))).thenReturn(car);
-        Mockito.when(carMapper.toDto(car)).thenReturn(expected);
+        when(carRepository.save(any(Car.class))).thenReturn(car);
+        when(carMapper.toDto(car)).thenReturn(expected);
 
         CarResponseDto actual = carService.update(car.getId(), requestForExpected);
 
@@ -165,7 +167,7 @@ class CarServiceImplTest {
     @Test
     @DisplayName("Given incorrect car id. Should throw EntityNotFoundException")
     void update_InvalidId_ShouldReturnCarDto() {
-        Mockito.when(carRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
+        when(carRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> carService.update(
                 DEFAULT_ID, new CarRequestDto()));

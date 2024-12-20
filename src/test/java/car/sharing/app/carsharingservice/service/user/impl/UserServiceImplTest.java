@@ -3,6 +3,8 @@ package car.sharing.app.carsharingservice.service.user.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 import car.sharing.app.carsharingservice.dto.user.UserDto;
 import car.sharing.app.carsharingservice.dto.user.UserRegistrationRequestDto;
@@ -22,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,15 +71,15 @@ class UserServiceImplTest {
                 .setLastName(user.getLastName())
                 .setRepeatPassword(user.getPassword());
 
-        Mockito.when(userRepository.findByEmailFetchRoles(expectedUserDto.getEmail()))
+        when(userRepository.findByEmailFetchRoles(expectedUserDto.getEmail()))
                 .thenReturn(Optional.empty());
-        Mockito.when(userMapper.toModelFromRegisterForm(requestDto)).thenReturn(user);
-        Mockito.when(passwordEncoder.encode(user.getPassword()))
+        when(userMapper.toModelFromRegisterForm(requestDto)).thenReturn(user);
+        when(passwordEncoder.encode(user.getPassword()))
                 .thenReturn(user.getPassword() + "encoded");
-        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.CUSTOMER))
+        when(roleRepository.findRoleByRoleName(Role.RoleName.CUSTOMER))
                 .thenReturn(Optional.of(new Role(Role.RoleName.CUSTOMER)));
-        Mockito.when(userRepository.save(user)).thenReturn(user);
-        Mockito.when(userMapper.toDto(user)).thenReturn(expectedUserDto);
+        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toDto(user)).thenReturn(expectedUserDto);
 
         UserDto registeredUser = userService.register(requestDto);
 
@@ -98,7 +99,7 @@ class UserServiceImplTest {
                 .setLastName("lastName")
                 .setRepeatPassword("password");
 
-        Mockito.when(userRepository.findByEmailFetchRoles(requestDto.getEmail()))
+        when(userRepository.findByEmailFetchRoles(requestDto.getEmail()))
                 .thenReturn(Optional.of(new User()));
 
         assertThrows(RegistrationException.class, () -> userService.register(requestDto));
@@ -130,7 +131,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Given invalid user id. Should throw EntityNotFoundException")
     void updateRole_InvalidUserId_ShouldThrowEntityNotFoundException() {
-        Mockito.when(userRepository.findById(ID)).thenReturn(Optional.empty());
+        when(userRepository.findById(ID)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService
                 .updateRole(ID, Role.RoleName.MANAGER.name()));
@@ -144,11 +145,11 @@ class UserServiceImplTest {
         User updatedUser = new User().setId(1L).setRoles(
                 Set.of(new Role(Role.RoleName.CUSTOMER), newRole));
 
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.MANAGER))
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(roleRepository.findRoleByRoleName(Role.RoleName.MANAGER))
                 .thenReturn(Optional.of(newRole));
-        Mockito.when(userRepository.save(user)).thenReturn(updatedUser);
-        Mockito.when(userMapper.toDto(updatedUser)).thenReturn(
+        when(userRepository.save(user)).thenReturn(updatedUser);
+        when(userMapper.toDto(updatedUser)).thenReturn(
                 new UserDto().setId(1L).setEmail("test@example.com"));
 
         UserDto result = userService.updateRole(1L, "MANAGER");
@@ -159,8 +160,8 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Given invalid role name. Should throw EntityNotFoundException")
     void updateRole_InvalidRoleName_ShouldThrowException() {
-        Mockito.when(userRepository.findById(ID)).thenReturn(Optional.of(new User()));
-        Mockito.when(roleRepository.findRoleByRoleName(Role.RoleName.CUSTOMER))
+        when(userRepository.findById(ID)).thenReturn(Optional.of(new User()));
+        when(roleRepository.findRoleByRoleName(Role.RoleName.CUSTOMER))
                 .thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
@@ -186,8 +187,8 @@ class UserServiceImplTest {
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName());
 
-        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        Mockito.when(userMapper.toDto(user)).thenReturn(expectedProfileInfo);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userMapper.toDto(user)).thenReturn(expectedProfileInfo);
 
         UserDto actualProfileInfo = userService.getCurrentProfileInfo(user.getId());
 
@@ -223,12 +224,12 @@ class UserServiceImplTest {
                 .setFirstName(updatedUser.getFirstName())
                 .setLastName(updatedUser.getLastName());
 
-        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        Mockito.when(userMapper.toModel(Mockito.any(UserDto.class))).thenReturn(user);
-        Mockito.when(userMapper.updateUser(Mockito.any(User.class), Mockito.any(User.class)))
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userMapper.toModel(any(UserDto.class))).thenReturn(user);
+        when(userMapper.updateUser(any(User.class), any(User.class)))
                 .thenReturn(updatedUser);
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(updatedUser);
-        Mockito.when(userMapper.toDto(updatedUser)).thenReturn(expectedProfileData);
+        when(userRepository.save(any(User.class))).thenReturn(updatedUser);
+        when(userMapper.toDto(updatedUser)).thenReturn(expectedProfileData);
 
         UserDto actualProfileData = userService
                 .updateProfileData(user.getId(), expectedProfileData);
