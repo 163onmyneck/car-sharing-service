@@ -1,6 +1,15 @@
 package car.sharing.app.carsharingservice.service.notification;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import car.sharing.app.carsharingservice.exception.EntityNotFoundException;
 import car.sharing.app.carsharingservice.model.User;
@@ -12,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -42,18 +50,18 @@ class TelegramNotificationServiceImplTest {
         update.getMessage().setChat(chat);
         update.getMessage().setMessageId(1);
 
-        TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
+        TelegramNotificationServiceImpl spyService = spy(notificationService);
 
         User user = new User().setId(DEFAULT_ID).setTgChatId(null);
-        Mockito.when(userRepository.findByTgChatId(DEFAULT_ID)).thenReturn(Optional.empty());
-        Mockito.when(userRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(user));
-        Mockito.doNothing().when(spyService).sendMessageToCustomer(
-                Mockito.anyLong(), Mockito.anyString());
+        when(userRepository.findByTgChatId(DEFAULT_ID)).thenReturn(Optional.empty());
+        when(userRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(user));
+        doNothing().when(spyService).sendMessageToCustomer(
+                anyLong(), anyString());
 
         spyService.onUpdateReceived(update);
 
-        Mockito.verify(userRepository).save(Mockito.any(User.class));
-        Mockito.verify(spyService).sendMessageToCustomer(Mockito.anyLong(), Mockito.anyString());
+        verify(userRepository).save(any(User.class));
+        verify(spyService).sendMessageToCustomer(anyLong(), anyString());
     }
 
     @Test
@@ -67,18 +75,18 @@ class TelegramNotificationServiceImplTest {
         update.getMessage().setChat(chat);
         update.getMessage().setMessageId(1);
 
-        TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
+        TelegramNotificationServiceImpl spyService = spy(notificationService);
 
         User user = new User().setId(DEFAULT_ID).setTgChatId(null);
-        Mockito.when(userRepository.findByTgChatId(DEFAULT_ID)).thenReturn(
+        when(userRepository.findByTgChatId(DEFAULT_ID)).thenReturn(
                 Optional.of(user));
-        Mockito.doNothing().when(spyService).sendMessageToCustomer(
-                Mockito.anyLong(), Mockito.anyString());
+        doNothing().when(spyService).sendMessageToCustomer(
+                anyLong(), anyString());
 
         spyService.onUpdateReceived(update);
 
-        Mockito.verify(spyService).sendMessageToCustomer(Mockito.anyLong(),
-                Mockito.anyString());
+        verify(spyService).sendMessageToCustomer(anyLong(),
+                anyString());
     }
 
     @Test
@@ -92,9 +100,9 @@ class TelegramNotificationServiceImplTest {
         update.getMessage().setChat(chat);
         update.getMessage().setMessageId(1);
 
-        TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
+        TelegramNotificationServiceImpl spyService = spy(notificationService);
 
-        Mockito.when(userRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
+        when(userRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> spyService.onUpdateReceived(update));
     }
@@ -110,14 +118,14 @@ class TelegramNotificationServiceImplTest {
         update.getMessage().setChat(chat);
         update.getMessage().setMessageId(1);
 
-        TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
+        TelegramNotificationServiceImpl spyService = spy(notificationService);
 
-        Mockito.doNothing().when(spyService).sendMessageToCustomer(Mockito.anyLong(),
-                Mockito.anyString());
+        doNothing().when(spyService).sendMessageToCustomer(anyLong(),
+                anyString());
 
         spyService.onUpdateReceived(update);
 
-        Mockito.verify(spyService).sendMessageToCustomer(Mockito.anyLong(), Mockito.anyString());
+        verify(spyService).sendMessageToCustomer(anyLong(), anyString());
     }
 
     @Test
@@ -130,15 +138,15 @@ class TelegramNotificationServiceImplTest {
                 new User().setTgChatId(null)
         );
 
-        TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
+        TelegramNotificationServiceImpl spyService = spy(notificationService);
 
-        Mockito.doReturn(null).when(spyService)
-                .execute(Mockito.any(SendMessage.class));
+        doReturn(null).when(spyService)
+                .execute(any(SendMessage.class));
 
         spyService.sendMessageToAllManagers(message, managers);
 
-        Mockito.verify(spyService, Mockito.times(2))
-                .execute(Mockito.any(SendMessage.class));
+        verify(spyService, times(2))
+                .execute(any(SendMessage.class));
     }
 
     @Test
@@ -169,14 +177,14 @@ class TelegramNotificationServiceImplTest {
         String message = "message";
         Long chatId = 5345345L;
 
-        TelegramNotificationServiceImpl spyService = Mockito.spy(notificationService);
+        TelegramNotificationServiceImpl spyService = spy(notificationService);
 
-        Mockito.doReturn(null).when(spyService)
-                .execute(Mockito.any(SendMessage.class));
+        doReturn(null).when(spyService)
+                .execute(any(SendMessage.class));
 
         spyService.sendMessageToCustomer(chatId, message);
 
-        Mockito.verify(spyService, Mockito.times(1))
-                .execute(Mockito.any(SendMessage.class));
+        verify(spyService, times(1))
+                .execute(any(SendMessage.class));
     }
 }

@@ -1,7 +1,8 @@
 package car.sharing.app.carsharingservice.repository.role;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import car.sharing.app.carsharingservice.model.Role;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,6 @@ class RoleRepositoryTest {
         Role.RoleName actualRoleName = roleRepository.findRoleByRoleName(
                 Role.RoleName.CUSTOMER).get().getRoleName();
 
-        Assertions.assertEquals(actualRoleName, Role.RoleName.CUSTOMER);
+        assertEquals(actualRoleName, Role.RoleName.CUSTOMER);
     }
 }

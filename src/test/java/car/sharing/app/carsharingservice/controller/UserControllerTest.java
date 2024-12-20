@@ -1,12 +1,12 @@
 package car.sharing.app.carsharingservice.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import car.sharing.app.carsharingservice.dto.user.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -83,7 +83,7 @@ class UserControllerTest {
         UserDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(), UserDto.class);
 
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -112,7 +112,7 @@ class UserControllerTest {
         UserDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(), UserDto.class);
 
-        Assertions.assertEquals(actual.getEmail(), newEmail);
-        Assertions.assertEquals(actual.getFirstName(), newFirstName);
+        assertEquals(actual.getEmail(), newEmail);
+        assertEquals(actual.getFirstName(), newFirstName);
     }
 }

@@ -1,8 +1,9 @@
 package car.sharing.app.carsharingservice.repository.payment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import car.sharing.app.carsharingservice.model.Payment;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ class PaymentRepositoryTest {
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAllByUserId() {
         List<Payment> allByUserId = paymentRepository.findAllByUserId(2L);
-        Assertions.assertEquals(2, allByUserId.size());
+        assertEquals(2, allByUserId.size());
     }
 
     @Test
@@ -41,6 +42,6 @@ class PaymentRepositoryTest {
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAllByStatus() {
         List<Payment> allByStatus = paymentRepository.findAllByStatus(Payment.Status.PAID);
-        Assertions.assertEquals(1, allByStatus.size());
+        assertEquals(1, allByStatus.size());
     }
 }

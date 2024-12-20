@@ -2,6 +2,9 @@ package car.sharing.app.carsharingservice.service.rental.impl;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import car.sharing.app.carsharingservice.dto.car.CarResponseDto;
 import car.sharing.app.carsharingservice.dto.rental.RentalRequestDto;
@@ -30,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -70,7 +72,7 @@ class RentalServiceImplTest {
     @DisplayName("Given invalid rental id, should throw EntityNotFoundException")
     void createRental_InvalidCarId_ShouldThrowException() {
         long invalidCarId = 1000L;
-        Mockito.when(carRepository.findById(invalidCarId)).thenReturn(Optional.empty());
+        when(carRepository.findById(invalidCarId)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> rentalService.createRental(
                 new RentalRequestDto()
                         .setCarId(invalidCarId)
@@ -81,9 +83,9 @@ class RentalServiceImplTest {
     @Test
     @DisplayName("Given invalid user id, should throw EntityNotFoundException")
     void createRental_InvalidUserId_ShouldThrowException() {
-        Mockito.when(carRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(
-                Mockito.mock(Car.class)));
-        Mockito.when(userRepository.findById(DEFAULT_ID_VALUE)).thenReturn(
+        when(carRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(
+                mock(Car.class)));
+        when(userRepository.findById(DEFAULT_ID_VALUE)).thenReturn(
                 Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> rentalService.createRental(
                 new RentalRequestDto()
@@ -138,12 +140,12 @@ class RentalServiceImplTest {
                 .setReturnDate(rental.getReturnDate())
                 .setRentalDate(rental.getRentalDate());
 
-        Mockito.when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
-        Mockito.when(carRepository.save(car)).thenReturn(updatedCar);
-        Mockito.when(carMapper.toDto(updatedCar)).thenReturn(carResponseDto);
-        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        Mockito.when(rentalRepository.save(Mockito.any(Rental.class))).thenReturn(rental);
-        Mockito.when(rentalMapper.toDto(rental)).thenReturn(rentalResponseDto);
+        when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
+        when(carRepository.save(car)).thenReturn(updatedCar);
+        when(carMapper.toDto(updatedCar)).thenReturn(carResponseDto);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(rentalRepository.save(any(Rental.class))).thenReturn(rental);
+        when(rentalMapper.toDto(rental)).thenReturn(rentalResponseDto);
 
         RentalRequestDto rentalRequestDto = new RentalRequestDto()
                 .setCarId(car.getId())
@@ -219,10 +221,10 @@ class RentalServiceImplTest {
 
         List<RentalResponseDto> expectedRentals = List.of(rentalResponseDto1, rentalResponseDto2);
 
-        Mockito.when(rentalRepository.getAllRentalsByUserIdFetchCars(user.getId()))
+        when(rentalRepository.getAllRentalsByUserIdFetchCars(user.getId()))
                                                             .thenReturn(rentals);
-        Mockito.when(rentalMapper.toDto(rental1)).thenReturn(rentalResponseDto1);
-        Mockito.when(rentalMapper.toDto(rental2)).thenReturn(rentalResponseDto2);
+        when(rentalMapper.toDto(rental1)).thenReturn(rentalResponseDto1);
+        when(rentalMapper.toDto(rental2)).thenReturn(rentalResponseDto2);
 
         List<RentalResponseDto> actual = rentalService.getAllRentalsByUserId(user.getId());
 
@@ -233,7 +235,7 @@ class RentalServiceImplTest {
     @Test
     @DisplayName("Given invalid rental id, should throw EntityNotFoundException")
     void returnRental_InvalidRentalId_ShouldThrowException() {
-        Mockito.when(rentalRepository.findById(DEFAULT_ID_VALUE))
+        when(rentalRepository.findById(DEFAULT_ID_VALUE))
                 .thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class,
                 () -> rentalService.returnRental(DEFAULT_ID_VALUE));
@@ -274,11 +276,11 @@ class RentalServiceImplTest {
                 .setReturnDate(rental.getReturnDate())
                 .setRentalDate(rental.getRentalDate());
 
-        Mockito.when(rentalRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(rental));
-        Mockito.when(carRepository.save(car)).thenReturn(car.increaseInventory());
-        Mockito.when(rentalRepository.save(Mockito.any(Rental.class))).thenReturn(rental);
-        Mockito.when(rentalMapper.toDto(rental)).thenReturn(rentalResponseDto);
-        Mockito.when(carMapper.toDto(car)).thenReturn(carResponseDto);
+        when(rentalRepository.findById(DEFAULT_ID_VALUE)).thenReturn(Optional.of(rental));
+        when(carRepository.save(car)).thenReturn(car.increaseInventory());
+        when(rentalRepository.save(any(Rental.class))).thenReturn(rental);
+        when(rentalMapper.toDto(rental)).thenReturn(rentalResponseDto);
+        when(carMapper.toDto(car)).thenReturn(carResponseDto);
 
         RentalResponseDto actualRental = rentalService.returnRental(DEFAULT_ID_VALUE);
 
@@ -322,9 +324,9 @@ class RentalServiceImplTest {
                 .setReturnDate(rental.getReturnDate())
                 .setRentalDate(rental.getRentalDate());
 
-        Mockito.when(rentalRepository.findAll(Mockito.any(Specification.class)))
+        when(rentalRepository.findAll(any(Specification.class)))
                 .thenReturn(List.of(rental));
-        Mockito.when(rentalMapper.toDto(rental)).thenReturn(expected);
+        when(rentalMapper.toDto(rental)).thenReturn(expected);
 
         List<RentalResponseDto> actual = rentalService.getSpecificRental(rentalSearchParams);
 

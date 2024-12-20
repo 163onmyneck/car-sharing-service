@@ -1,8 +1,9 @@
 package car.sharing.app.carsharingservice.repository.rental;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import car.sharing.app.carsharingservice.model.Rental;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -27,6 +28,6 @@ class RentalRepositoryTest {
         int expectedSize = 2;
         List<Rental> actual = rentalRepository.getAllRentalsByUserIdFetchCars(2L);
 
-        Assertions.assertEquals(expectedSize, actual.size());
+        assertEquals(expectedSize, actual.size());
     }
 }

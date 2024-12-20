@@ -1,9 +1,10 @@
 package car.sharing.app.carsharingservice.repository.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import car.sharing.app.carsharingservice.model.Role;
 import car.sharing.app.carsharingservice.model.User;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ class UserRepositoryTest {
         String expectedEmail = "test1@gmail.com";
         String actualEmail = userRepository.findByEmailFetchRoles(expectedEmail).get().getEmail();
 
-        Assertions.assertEquals(actualEmail, expectedEmail);
+        assertEquals(actualEmail, expectedEmail);
     }
 
     @Test
@@ -52,8 +53,8 @@ class UserRepositoryTest {
         int actualCustomerListSize = customers.size();
         int actualManagerListSize = managers.size();
 
-        Assertions.assertEquals(expectedCustomerListSize, actualCustomerListSize);
-        Assertions.assertEquals(expectedManagerListSize, actualManagerListSize);
+        assertEquals(expectedCustomerListSize, actualCustomerListSize);
+        assertEquals(expectedManagerListSize, actualManagerListSize);
     }
 
     @Test
@@ -69,6 +70,6 @@ class UserRepositoryTest {
 
         User actual = userRepository.findByTgChatId(tgChatId).get();
 
-        Assertions.assertEquals(tgChatId, actual.getTgChatId());
+        assertEquals(tgChatId, actual.getTgChatId());
     }
 }

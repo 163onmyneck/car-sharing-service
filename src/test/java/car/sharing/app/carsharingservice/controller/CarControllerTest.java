@@ -1,5 +1,7 @@
 package car.sharing.app.carsharingservice.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,7 +15,6 @@ import car.sharing.app.carsharingservice.model.Car;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,7 +80,7 @@ class CarControllerTest {
                 result.getResponse().getContentAsString(),
                 CarResponseDto.class);
 
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertTrue(EqualsBuilder.reflectionEquals(expected, actual, "id"));
     }
 
     @Test
@@ -100,7 +101,7 @@ class CarControllerTest {
                 result.getResponse().getContentAsString(),
                 CarResponseDto[].class);
 
-        Assertions.assertEquals(expectedSize, actual.length);
+        assertEquals(expectedSize, actual.length);
     }
 
     @Test
@@ -153,7 +154,7 @@ class CarControllerTest {
                 result.getResponse().getContentAsString(),
                 CarResponseDto.class);
 
-        Assertions.assertEquals(newModel, actual.getModel());
+        assertEquals(newModel, actual.getModel());
     }
 
     @Test
